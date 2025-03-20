@@ -42,30 +42,47 @@ struct CameraView: UIViewControllerRepresentable {
             print("Fehler beim Zugriff auf die Kamera: \(error)")
         }
 
-        // Erstelle den Preview-Layer, der das komplette View ausfüllt
         let previewLayer = AVCaptureVideoPreviewLayer(session: session)
-        previewLayer.videoGravity = .resizeAspect  // passt das Bild an, sodass der gesamte Inhalt zu sehen ist
+        previewLayer.videoGravity = .resizeAspect
         previewLayer.frame = viewController.view.bounds
         previewLayer.backgroundColor = UIColor.black.cgColor
         viewController.view.layer.addSublayer(previewLayer)
 
-        // Capture-Button positioniert im unteren Bereich
-        let captureButton = UIButton(frame: CGRect(
-            x: viewController.view.frame.midX - 40,
-            y: viewController.view.frame.height * 0.82,
-            width: 80,
-            height: 80
-        ))
+        let buttonSize: CGFloat = 75
+        let captureButton = UIButton(type: .custom)
+        captureButton.frame = CGRect(
+            x: (viewController.view.frame.width - buttonSize) / 2,
+            y: viewController.view.frame.height - buttonSize - 40,
+            width: buttonSize,
+            height: buttonSize)
         captureButton.backgroundColor = .white
-        captureButton.layer.cornerRadius = 40
-        captureButton.addTarget(
-            context.coordinator,
-            action: #selector(Coordinator.capturePhoto),
-            for: .touchUpInside
+        captureButton.layer.cornerRadius = buttonSize / 2
+        
+
+        let ringLayer = CAShapeLayer()
+        let ringPath = UIBezierPath(
+            arcCenter: CGPoint(x: buttonSize / 2, y: buttonSize / 2),
+            radius: buttonSize / 2 + 6,
+            startAngle: 0,
+            endAngle: CGFloat.pi * 2,
+            clockwise: true
         )
+        ringLayer.path = ringPath.cgPath
+        ringLayer.fillColor = UIColor.clear.cgColor
+        ringLayer.strokeColor = UIColor.white.cgColor
+        ringLayer.lineWidth = 4.0
+        captureButton.layer.insertSublayer(ringLayer, below: captureButton.layer)
+        
+        context.coordinator.captureButtonRing = ringLayer
+
+        captureButton.addTarget(context.coordinator, action: #selector(Coordinator.captureButtonDown(_:)), for: .touchDown)
+        captureButton.addTarget(context.coordinator, action: #selector(Coordinator.captureButtonUp(_:)), for: .touchUpInside)
+        captureButton.addTarget(context.coordinator, action: #selector(Coordinator.captureButtonUp(_:)), for: .touchUpOutside)
+        captureButton.addTarget(context.coordinator, action: #selector(Coordinator.capturePhoto), for: .touchUpInside)
+        
+
         viewController.view.addSubview(captureButton)
 
-        // Starte die Session im Hintergrund
         Task.detached(priority: .userInitiated) {
             session.startRunning()
         }
@@ -82,6 +99,7 @@ struct CameraView: UIViewControllerRepresentable {
         let parent: CameraView
         var captureSession: AVCaptureSession?
         var photoOutput = AVCapturePhotoOutput()
+        var captureButtonRing: CAShapeLayer?
 
         init(parent: CameraView) {
             self.parent = parent
@@ -100,6 +118,19 @@ struct CameraView: UIViewControllerRepresentable {
                 self.triggerHapticFeedback()
             }
         }
+        @objc func captureButtonDown(_ sender: UIButton) {
+            sender.backgroundColor = UIColor.lightGray
+            captureButtonRing?.strokeColor = UIColor.lightGray.cgColor
+        }
+
+        @objc func captureButtonUp(_ sender: UIButton) {
+            UIView.animate(withDuration: 0.2) {
+                sender.backgroundColor = UIColor.white
+                self.captureButtonRing?.strokeColor = UIColor.white.cgColor
+            }
+        }
+        
+        
 
         func photoOutput(_ output: AVCapturePhotoOutput,
                          didFinishProcessingPhoto photo: AVCapturePhoto,
