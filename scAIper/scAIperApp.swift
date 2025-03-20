@@ -7,11 +7,14 @@
 
 import SwiftUI
 
+
 @main
 struct scAIperApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplashScreenView()
         }
     }
 }
+
+

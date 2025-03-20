@@ -6,6 +6,26 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FF398D4B2D89BE8000364262 /* DocumentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D3F2D89BE8000364262 /* DocumentDetailView.swift */; };
+		FF398D4D2D89BE8000364262 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D482D89BE8000364262 /* ScannerView.swift */; };
+		FF398D4E2D89BE8000364262 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D442D89BE8000364262 /* MainView.swift */; };
+		FF398D4F2D89BE8000364262 /* DocumentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D402D89BE8000364262 /* DocumentListView.swift */; };
+		FF398D502D89BE8000364262 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D3C2D89BE8000364262 /* CameraView.swift */; };
+		FF398D512D89BE8000364262 /* ExpenseOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D412D89BE8000364262 /* ExpenseOverviewView.swift */; };
+		FF398D522D89BE8000364262 /* OCRTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D462D89BE8000364262 /* OCRTextView.swift */; };
+		FF398D532D89BE8000364262 /* scAIperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D472D89BE8000364262 /* scAIperApp.swift */; };
+		FF398D542D89BE8000364262 /* FolderDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D422D89BE8000364262 /* FolderDetailView.swift */; };
+		FF398D552D89BE8000364262 /* ChatbotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D3D2D89BE8000364262 /* ChatbotView.swift */; };
+		FF398D572D89BE8000364262 /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D492D89BE8000364262 /* SplashScreenView.swift */; };
+		FF398D582D89BE8000364262 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF398D392D89BE8000364262 /* Preview Assets.xcassets */; };
+		FF398D5A2D89BE8000364262 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF398D3B2D89BE8000364262 /* Assets.xcassets */; };
+		FF398D6F2D8C11D200364262 /* OcrViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D6E2D8C11D200364262 /* OcrViewModel.swift */; };
+		FF398D732D8C154300364262 /* OCRManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D722D8C154300364262 /* OCRManager.swift */; };
+		FF398D772D8C17AF00364262 /* FullScreenImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D762D8C17AF00364262 /* FullScreenImageView.swift */; };
+		FF398D7A2D8C1C0400364262 /* TextClustering.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D792D8C1C0400364262 /* TextClustering.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		FF398CD12D887B6A00364262 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,14 +47,27 @@
 		FF398CC02D887B6900364262 /* scAIper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = scAIper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF398CD02D887B6A00364262 /* scAIperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = scAIperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF398CDA2D887B6A00364262 /* scAIperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = scAIperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF398D392D89BE8000364262 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		FF398D3B2D89BE8000364262 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FF398D3C2D89BE8000364262 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		FF398D3D2D89BE8000364262 /* ChatbotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatbotView.swift; sourceTree = "<group>"; };
+		FF398D3F2D89BE8000364262 /* DocumentDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDetailView.swift; sourceTree = "<group>"; };
+		FF398D402D89BE8000364262 /* DocumentListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentListView.swift; sourceTree = "<group>"; };
+		FF398D412D89BE8000364262 /* ExpenseOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseOverviewView.swift; sourceTree = "<group>"; };
+		FF398D422D89BE8000364262 /* FolderDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderDetailView.swift; sourceTree = "<group>"; };
+		FF398D432D89BE8000364262 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FF398D442D89BE8000364262 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		FF398D462D89BE8000364262 /* OCRTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRTextView.swift; sourceTree = "<group>"; };
+		FF398D472D89BE8000364262 /* scAIperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = scAIperApp.swift; sourceTree = "<group>"; };
+		FF398D482D89BE8000364262 /* ScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerView.swift; sourceTree = "<group>"; };
+		FF398D492D89BE8000364262 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
+		FF398D6E2D8C11D200364262 /* OcrViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OcrViewModel.swift; sourceTree = "<group>"; };
+		FF398D722D8C154300364262 /* OCRManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRManager.swift; sourceTree = "<group>"; };
+		FF398D762D8C17AF00364262 /* FullScreenImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenImageView.swift; sourceTree = "<group>"; };
+		FF398D792D8C1C0400364262 /* TextClustering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextClustering.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		FF398CC22D887B6900364262 /* scAIper */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = scAIper;
-			sourceTree = "<group>";
-		};
 		FF398CD32D887B6A00364262 /* scAIperTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = scAIperTests;
@@ -75,7 +108,7 @@
 		FF398CB72D887B6900364262 = {
 			isa = PBXGroup;
 			children = (
-				FF398CC22D887B6900364262 /* scAIper */,
+				FF398D4A2D89BE8000364262 /* scAIper */,
 				FF398CD32D887B6A00364262 /* scAIperTests */,
 				FF398CDD2D887B6A00364262 /* scAIperUITests */,
 				FF398CC12D887B6900364262 /* Products */,
@@ -92,6 +125,87 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		FF398D3A2D89BE8000364262 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				FF398D392D89BE8000364262 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		FF398D4A2D89BE8000364262 /* scAIper */ = {
+			isa = PBXGroup;
+			children = (
+				FF398D692D8C116800364262 /* Services */,
+				FF398D662D8C110500364262 /* ViewModels */,
+				FF398D5B2D89C05100364262 /* Views */,
+				FF398D3A2D89BE8000364262 /* Preview Content */,
+				FF398D3B2D89BE8000364262 /* Assets.xcassets */,
+				FF398D432D89BE8000364262 /* Info.plist */,
+				FF398D472D89BE8000364262 /* scAIperApp.swift */,
+			);
+			path = scAIper;
+			sourceTree = "<group>";
+		};
+		FF398D5B2D89C05100364262 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FF398D5F2D89C1D500364262 /* Document */,
+				FF398D5E2D89C1C700364262 /* Chatbot */,
+				FF398D5D2D89C19D00364262 /* Scan */,
+				FF398D412D89BE8000364262 /* ExpenseOverviewView.swift */,
+				FF398D442D89BE8000364262 /* MainView.swift */,
+				FF398D492D89BE8000364262 /* SplashScreenView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		FF398D5D2D89C19D00364262 /* Scan */ = {
+			isa = PBXGroup;
+			children = (
+				FF398D762D8C17AF00364262 /* FullScreenImageView.swift */,
+				FF398D482D89BE8000364262 /* ScannerView.swift */,
+				FF398D3C2D89BE8000364262 /* CameraView.swift */,
+				FF398D462D89BE8000364262 /* OCRTextView.swift */,
+			);
+			path = Scan;
+			sourceTree = "<group>";
+		};
+		FF398D5E2D89C1C700364262 /* Chatbot */ = {
+			isa = PBXGroup;
+			children = (
+				FF398D3D2D89BE8000364262 /* ChatbotView.swift */,
+			);
+			path = Chatbot;
+			sourceTree = "<group>";
+		};
+		FF398D5F2D89C1D500364262 /* Document */ = {
+			isa = PBXGroup;
+			children = (
+				FF398D3F2D89BE8000364262 /* DocumentDetailView.swift */,
+				FF398D402D89BE8000364262 /* DocumentListView.swift */,
+				FF398D422D89BE8000364262 /* FolderDetailView.swift */,
+			);
+			path = Document;
+			sourceTree = "<group>";
+		};
+		FF398D662D8C110500364262 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				FF398D6E2D8C11D200364262 /* OcrViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		FF398D692D8C116800364262 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				FF398D792D8C1C0400364262 /* TextClustering.swift */,
+				FF398D722D8C154300364262 /* OCRManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -106,9 +220,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				FF398CC22D887B6900364262 /* scAIper */,
 			);
 			name = scAIper;
 			packageProductDependencies = (
@@ -212,6 +323,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF398D582D89BE8000364262 /* Preview Assets.xcassets in Resources */,
+				FF398D5A2D89BE8000364262 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,6 +349,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF398D4B2D89BE8000364262 /* DocumentDetailView.swift in Sources */,
+				FF398D4D2D89BE8000364262 /* ScannerView.swift in Sources */,
+				FF398D4E2D89BE8000364262 /* MainView.swift in Sources */,
+				FF398D4F2D89BE8000364262 /* DocumentListView.swift in Sources */,
+				FF398D6F2D8C11D200364262 /* OcrViewModel.swift in Sources */,
+				FF398D502D89BE8000364262 /* CameraView.swift in Sources */,
+				FF398D512D89BE8000364262 /* ExpenseOverviewView.swift in Sources */,
+				FF398D772D8C17AF00364262 /* FullScreenImageView.swift in Sources */,
+				FF398D522D89BE8000364262 /* OCRTextView.swift in Sources */,
+				FF398D532D89BE8000364262 /* scAIperApp.swift in Sources */,
+				FF398D7A2D8C1C0400364262 /* TextClustering.swift in Sources */,
+				FF398D542D89BE8000364262 /* FolderDetailView.swift in Sources */,
+				FF398D552D89BE8000364262 /* ChatbotView.swift in Sources */,
+				FF398D732D8C154300364262 /* OCRManager.swift in Sources */,
+				FF398D572D89BE8000364262 /* SplashScreenView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -399,6 +527,7 @@
 				DEVELOPMENT_TEAM = L9DRFP2M8Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = /Users/MeinNotebook/scAIper/scAIper/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -428,6 +557,7 @@
 				DEVELOPMENT_TEAM = L9DRFP2M8Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = /Users/MeinNotebook/scAIper/scAIper/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
