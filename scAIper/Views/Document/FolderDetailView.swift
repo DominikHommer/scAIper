@@ -9,66 +9,29 @@
 import SwiftUI
 
 struct FolderDetailView: View {
-    let folder: DocumentFolder
-    @Binding var folders: [DocumentFolder]
-    
-    @State private var newDocumentName: String = ""
-    @State private var isAddingDocument = false
+    let category: String
+    @State private var files: [URL] = []
     
     var body: some View {
-        List {
-            ForEach(folder.documents) { document in
-                NavigationLink(destination: DocumentDetailView(document: document)) {
-                    HStack {
-                        Image(systemName: "doc.text")
-                            .foregroundColor(.blue)
-                        
-                        VStack(alignment: .leading) {
-                            Text(document.name)
-                                .font(.headline)
-                            Text(document.date, format: .dateTime.day().month().year())
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                        }
-                    }
-                }
-            }
-            .onDelete(perform: deleteDocument)
-        }
-        .navigationTitle(folder.name)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: { isAddingDocument = true }) {
-                    Label("Dokument hinzufügen", systemImage: "plus")
-                }
+        List(files, id: \.self) { file in
+            NavigationLink(destination: DocumentDetailView(fileURL: file)) {
+                Text(file.lastPathComponent)
             }
         }
-        .alert("Neues Dokument hinzufügen", isPresented: $isAddingDocument) {
-            TextField("Dokumentname", text: $newDocumentName)
-            Button("Hinzufügen", action: addDocument)
-            Button("Abbrechen", role: .cancel) { }
+        .navigationTitle(category)
+        .onAppear {
+            loadFiles()
         }
     }
     
-    private func addDocument() {
-        guard !newDocumentName.isEmpty else { return }
-        
-        if let index = folders.firstIndex(where: { $0.id == folder.id }) {
-            folders[index].documents.append(Document(name: newDocumentName, date: Date()))
-        }
-        
-        newDocumentName = ""
-    }
-
-    private func deleteDocument(at offsets: IndexSet) {
-        if let index = folders.firstIndex(where: { $0.id == folder.id }) {
-            folders[index].documents.remove(atOffsets: offsets)
+    func loadFiles() {
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let categoryURL = documentsURL.appendingPathComponent(category)
+        do {
+            files = try fileManager.contentsOfDirectory(at: categoryURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+        } catch {
+            print("Fehler beim Laden der Dateien: \(error)")
         }
     }
-}
-
-#Preview {
-    FolderDetailView(folder: DocumentFolder(name: "Verträge", documents: [
-        Document(name: "Mietvertrag", date: Date())
-    ]), folders: .constant([]))
 }

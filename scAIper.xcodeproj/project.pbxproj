@@ -11,7 +11,6 @@
 		FF398D4D2D89BE8000364262 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D482D89BE8000364262 /* ScannerView.swift */; };
 		FF398D4E2D89BE8000364262 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D442D89BE8000364262 /* MainView.swift */; };
 		FF398D4F2D89BE8000364262 /* DocumentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D402D89BE8000364262 /* DocumentListView.swift */; };
-		FF398D502D89BE8000364262 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D3C2D89BE8000364262 /* CameraView.swift */; };
 		FF398D512D89BE8000364262 /* ExpenseOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D412D89BE8000364262 /* ExpenseOverviewView.swift */; };
 		FF398D522D89BE8000364262 /* OCRTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D462D89BE8000364262 /* OCRTextView.swift */; };
 		FF398D532D89BE8000364262 /* scAIperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D472D89BE8000364262 /* scAIperApp.swift */; };
@@ -24,6 +23,10 @@
 		FF398D732D8C154300364262 /* OCRManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D722D8C154300364262 /* OCRManager.swift */; };
 		FF398D772D8C17AF00364262 /* FullScreenImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D762D8C17AF00364262 /* FullScreenImageView.swift */; };
 		FF398D7A2D8C1C0400364262 /* TextClustering.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D792D8C1C0400364262 /* TextClustering.swift */; };
+		FF398D7C2D8C70F600364262 /* SaveDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D7B2D8C70F600364262 /* SaveDocumentView.swift */; };
+		FF398D7F2D8D443800364262 /* DocumentSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D7E2D8D443800364262 /* DocumentSaver.swift */; };
+		FF398D872D917C7600364262 /* DocumentScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D862D917C7600364262 /* DocumentScannerView.swift */; };
+		FF398D972D92DE4300364262 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D962D92DE4300364262 /* DocumentType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,7 +52,6 @@
 		FF398CDA2D887B6A00364262 /* scAIperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = scAIperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF398D392D89BE8000364262 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FF398D3B2D89BE8000364262 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		FF398D3C2D89BE8000364262 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		FF398D3D2D89BE8000364262 /* ChatbotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatbotView.swift; sourceTree = "<group>"; };
 		FF398D3F2D89BE8000364262 /* DocumentDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDetailView.swift; sourceTree = "<group>"; };
 		FF398D402D89BE8000364262 /* DocumentListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentListView.swift; sourceTree = "<group>"; };
@@ -65,6 +67,10 @@
 		FF398D722D8C154300364262 /* OCRManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRManager.swift; sourceTree = "<group>"; };
 		FF398D762D8C17AF00364262 /* FullScreenImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenImageView.swift; sourceTree = "<group>"; };
 		FF398D792D8C1C0400364262 /* TextClustering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextClustering.swift; sourceTree = "<group>"; };
+		FF398D7B2D8C70F600364262 /* SaveDocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDocumentView.swift; sourceTree = "<group>"; };
+		FF398D7E2D8D443800364262 /* DocumentSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentSaver.swift; sourceTree = "<group>"; };
+		FF398D862D917C7600364262 /* DocumentScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
+		FF398D962D92DE4300364262 /* DocumentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -136,6 +142,7 @@
 		FF398D4A2D89BE8000364262 /* scAIper */ = {
 			isa = PBXGroup;
 			children = (
+				FF398D7D2D8D443100364262 /* Models */,
 				FF398D692D8C116800364262 /* Services */,
 				FF398D662D8C110500364262 /* ViewModels */,
 				FF398D5B2D89C05100364262 /* Views */,
@@ -163,9 +170,11 @@
 		FF398D5D2D89C19D00364262 /* Scan */ = {
 			isa = PBXGroup;
 			children = (
+				FF398D7B2D8C70F600364262 /* SaveDocumentView.swift */,
 				FF398D762D8C17AF00364262 /* FullScreenImageView.swift */,
 				FF398D482D89BE8000364262 /* ScannerView.swift */,
-				FF398D3C2D89BE8000364262 /* CameraView.swift */,
+				FF398D962D92DE4300364262 /* DocumentType.swift */,
+				FF398D862D917C7600364262 /* DocumentScannerView.swift */,
 				FF398D462D89BE8000364262 /* OCRTextView.swift */,
 			);
 			path = Scan;
@@ -204,6 +213,14 @@
 				FF398D722D8C154300364262 /* OCRManager.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		FF398D7D2D8D443100364262 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FF398D7E2D8D443800364262 /* DocumentSaver.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -351,14 +368,17 @@
 			files = (
 				FF398D4B2D89BE8000364262 /* DocumentDetailView.swift in Sources */,
 				FF398D4D2D89BE8000364262 /* ScannerView.swift in Sources */,
+				FF398D972D92DE4300364262 /* DocumentType.swift in Sources */,
+				FF398D872D917C7600364262 /* DocumentScannerView.swift in Sources */,
 				FF398D4E2D89BE8000364262 /* MainView.swift in Sources */,
 				FF398D4F2D89BE8000364262 /* DocumentListView.swift in Sources */,
+				FF398D7F2D8D443800364262 /* DocumentSaver.swift in Sources */,
 				FF398D6F2D8C11D200364262 /* OcrViewModel.swift in Sources */,
-				FF398D502D89BE8000364262 /* CameraView.swift in Sources */,
 				FF398D512D89BE8000364262 /* ExpenseOverviewView.swift in Sources */,
 				FF398D772D8C17AF00364262 /* FullScreenImageView.swift in Sources */,
 				FF398D522D89BE8000364262 /* OCRTextView.swift in Sources */,
 				FF398D532D89BE8000364262 /* scAIperApp.swift in Sources */,
+				FF398D7C2D8C70F600364262 /* SaveDocumentView.swift in Sources */,
 				FF398D7A2D8C1C0400364262 /* TextClustering.swift in Sources */,
 				FF398D542D89BE8000364262 /* FolderDetailView.swift in Sources */,
 				FF398D552D89BE8000364262 /* ChatbotView.swift in Sources */,

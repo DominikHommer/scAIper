@@ -92,9 +92,10 @@ extension OCRManager {
             let recognizedStrings = cluster.compactMap {
                 $0.topCandidates(1).first?.string
             }
-            result += "Struktur #\(index + 1):\n"
+            //result += "Struktur #\(index + 1):\n"
             result += recognizedStrings.joined(separator: "\n")
-            result += "\n\n"
+            //result += "\n\n"
+
         }
         return result
     }

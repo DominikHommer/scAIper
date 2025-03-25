@@ -10,7 +10,7 @@ import SwiftUI
 struct MainView: View {
     var body: some View {
         TabView {
-            ScannerView()
+            DocumentGridView()
                 .tabItem {
                     Label("Scannen", systemImage: "camera.viewfinder")
                 }
