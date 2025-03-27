@@ -10,7 +10,7 @@
 		FF398D4B2D89BE8000364262 /* DocumentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D3F2D89BE8000364262 /* DocumentDetailView.swift */; };
 		FF398D4D2D89BE8000364262 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D482D89BE8000364262 /* ScannerView.swift */; };
 		FF398D4E2D89BE8000364262 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D442D89BE8000364262 /* MainView.swift */; };
-		FF398D4F2D89BE8000364262 /* DocumentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D402D89BE8000364262 /* DocumentListView.swift */; };
+		FF398D4F2D89BE8000364262 /* FolderListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D402D89BE8000364262 /* FolderListView.swift */; };
 		FF398D512D89BE8000364262 /* ExpenseOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D412D89BE8000364262 /* ExpenseOverviewView.swift */; };
 		FF398D522D89BE8000364262 /* OCRTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D462D89BE8000364262 /* OCRTextView.swift */; };
 		FF398D532D89BE8000364262 /* scAIperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D472D89BE8000364262 /* scAIperApp.swift */; };
@@ -26,7 +26,14 @@
 		FF398D7C2D8C70F600364262 /* SaveDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D7B2D8C70F600364262 /* SaveDocumentView.swift */; };
 		FF398D7F2D8D443800364262 /* DocumentSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D7E2D8D443800364262 /* DocumentSaver.swift */; };
 		FF398D872D917C7600364262 /* DocumentScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D862D917C7600364262 /* DocumentScannerView.swift */; };
-		FF398D972D92DE4300364262 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D962D92DE4300364262 /* DocumentType.swift */; };
+		FF398D972D92DE4300364262 /* DocumentGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D962D92DE4300364262 /* DocumentGridView.swift */; };
+		FF398D992D92F72B00364262 /* CSVTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D982D92F72B00364262 /* CSVTableView.swift */; };
+		FF398D9B2D95C05700364262 /* ScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D9A2D95C05700364262 /* ScannerViewModel.swift */; };
+		FF398D9D2D95C51400364262 /* PDFKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D9C2D95C51400364262 /* PDFKitView.swift */; };
+		FF398D9F2D95C5BA00364262 /* CSVTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D9E2D95C5BA00364262 /* CSVTableViewModel.swift */; };
+		FF398DA12D95C72900364262 /* FolderDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DA02D95C72900364262 /* FolderDetailViewModel.swift */; };
+		FF398DA32D95C77F00364262 /* FolderListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DA22D95C77F00364262 /* FolderListViewModel.swift */; };
+		FF398DA52D95C7F100364262 /* DocumentDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DA42D95C7F100364262 /* DocumentDetailViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,7 +61,7 @@
 		FF398D3B2D89BE8000364262 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FF398D3D2D89BE8000364262 /* ChatbotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatbotView.swift; sourceTree = "<group>"; };
 		FF398D3F2D89BE8000364262 /* DocumentDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDetailView.swift; sourceTree = "<group>"; };
-		FF398D402D89BE8000364262 /* DocumentListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentListView.swift; sourceTree = "<group>"; };
+		FF398D402D89BE8000364262 /* FolderListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderListView.swift; sourceTree = "<group>"; };
 		FF398D412D89BE8000364262 /* ExpenseOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseOverviewView.swift; sourceTree = "<group>"; };
 		FF398D422D89BE8000364262 /* FolderDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderDetailView.swift; sourceTree = "<group>"; };
 		FF398D432D89BE8000364262 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -70,7 +77,14 @@
 		FF398D7B2D8C70F600364262 /* SaveDocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDocumentView.swift; sourceTree = "<group>"; };
 		FF398D7E2D8D443800364262 /* DocumentSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentSaver.swift; sourceTree = "<group>"; };
 		FF398D862D917C7600364262 /* DocumentScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
-		FF398D962D92DE4300364262 /* DocumentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentType.swift; sourceTree = "<group>"; };
+		FF398D962D92DE4300364262 /* DocumentGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentGridView.swift; sourceTree = "<group>"; };
+		FF398D982D92F72B00364262 /* CSVTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVTableView.swift; sourceTree = "<group>"; };
+		FF398D9A2D95C05700364262 /* ScannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerViewModel.swift; sourceTree = "<group>"; };
+		FF398D9C2D95C51400364262 /* PDFKitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFKitView.swift; sourceTree = "<group>"; };
+		FF398D9E2D95C5BA00364262 /* CSVTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVTableViewModel.swift; sourceTree = "<group>"; };
+		FF398DA02D95C72900364262 /* FolderDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderDetailViewModel.swift; sourceTree = "<group>"; };
+		FF398DA22D95C77F00364262 /* FolderListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderListViewModel.swift; sourceTree = "<group>"; };
+		FF398DA42D95C7F100364262 /* DocumentDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDetailViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -172,8 +186,10 @@
 			children = (
 				FF398D7B2D8C70F600364262 /* SaveDocumentView.swift */,
 				FF398D762D8C17AF00364262 /* FullScreenImageView.swift */,
+				FF398D9C2D95C51400364262 /* PDFKitView.swift */,
 				FF398D482D89BE8000364262 /* ScannerView.swift */,
-				FF398D962D92DE4300364262 /* DocumentType.swift */,
+				FF398D982D92F72B00364262 /* CSVTableView.swift */,
+				FF398D962D92DE4300364262 /* DocumentGridView.swift */,
 				FF398D862D917C7600364262 /* DocumentScannerView.swift */,
 				FF398D462D89BE8000364262 /* OCRTextView.swift */,
 			);
@@ -192,7 +208,7 @@
 			isa = PBXGroup;
 			children = (
 				FF398D3F2D89BE8000364262 /* DocumentDetailView.swift */,
-				FF398D402D89BE8000364262 /* DocumentListView.swift */,
+				FF398D402D89BE8000364262 /* FolderListView.swift */,
 				FF398D422D89BE8000364262 /* FolderDetailView.swift */,
 			);
 			path = Document;
@@ -201,6 +217,11 @@
 		FF398D662D8C110500364262 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				FF398DA42D95C7F100364262 /* DocumentDetailViewModel.swift */,
+				FF398DA22D95C77F00364262 /* FolderListViewModel.swift */,
+				FF398DA02D95C72900364262 /* FolderDetailViewModel.swift */,
+				FF398D9E2D95C5BA00364262 /* CSVTableViewModel.swift */,
+				FF398D9A2D95C05700364262 /* ScannerViewModel.swift */,
 				FF398D6E2D8C11D200364262 /* OcrViewModel.swift */,
 			);
 			path = ViewModels;
@@ -209,6 +230,7 @@
 		FF398D692D8C116800364262 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				FF398D7E2D8D443800364262 /* DocumentSaver.swift */,
 				FF398D792D8C1C0400364262 /* TextClustering.swift */,
 				FF398D722D8C154300364262 /* OCRManager.swift */,
 			);
@@ -218,7 +240,6 @@
 		FF398D7D2D8D443100364262 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				FF398D7E2D8D443800364262 /* DocumentSaver.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -367,22 +388,29 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF398D4B2D89BE8000364262 /* DocumentDetailView.swift in Sources */,
+				FF398DA12D95C72900364262 /* FolderDetailViewModel.swift in Sources */,
 				FF398D4D2D89BE8000364262 /* ScannerView.swift in Sources */,
-				FF398D972D92DE4300364262 /* DocumentType.swift in Sources */,
+				FF398D972D92DE4300364262 /* DocumentGridView.swift in Sources */,
 				FF398D872D917C7600364262 /* DocumentScannerView.swift in Sources */,
 				FF398D4E2D89BE8000364262 /* MainView.swift in Sources */,
-				FF398D4F2D89BE8000364262 /* DocumentListView.swift in Sources */,
+				FF398D4F2D89BE8000364262 /* FolderListView.swift in Sources */,
 				FF398D7F2D8D443800364262 /* DocumentSaver.swift in Sources */,
 				FF398D6F2D8C11D200364262 /* OcrViewModel.swift in Sources */,
 				FF398D512D89BE8000364262 /* ExpenseOverviewView.swift in Sources */,
 				FF398D772D8C17AF00364262 /* FullScreenImageView.swift in Sources */,
 				FF398D522D89BE8000364262 /* OCRTextView.swift in Sources */,
+				FF398DA52D95C7F100364262 /* DocumentDetailViewModel.swift in Sources */,
 				FF398D532D89BE8000364262 /* scAIperApp.swift in Sources */,
+				FF398D9D2D95C51400364262 /* PDFKitView.swift in Sources */,
 				FF398D7C2D8C70F600364262 /* SaveDocumentView.swift in Sources */,
+				FF398D992D92F72B00364262 /* CSVTableView.swift in Sources */,
+				FF398DA32D95C77F00364262 /* FolderListViewModel.swift in Sources */,
 				FF398D7A2D8C1C0400364262 /* TextClustering.swift in Sources */,
+				FF398D9B2D95C05700364262 /* ScannerViewModel.swift in Sources */,
 				FF398D542D89BE8000364262 /* FolderDetailView.swift in Sources */,
 				FF398D552D89BE8000364262 /* ChatbotView.swift in Sources */,
 				FF398D732D8C154300364262 /* OCRManager.swift in Sources */,
+				FF398D9F2D95C5BA00364262 /* CSVTableViewModel.swift in Sources */,
 				FF398D572D89BE8000364262 /* SplashScreenView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

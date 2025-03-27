@@ -11,7 +11,6 @@ import SwiftUI
 enum DocumentType: String, CaseIterable, Identifiable {
     case rechnung = "Rechnung"
     case bericht = "Bericht"
-    case tabelle = "Tabelle"
     case lohnzettel = "Lohnzettel"
     case vertrag = "Vertrag"
     case andere = "Andere"
@@ -22,7 +21,6 @@ enum DocumentType: String, CaseIterable, Identifiable {
         switch self {
         case .rechnung: return "doc.text"
         case .bericht: return "doc.plaintext"
-        case .tabelle: return "tablecells"
         case .lohnzettel: return "eurosign.square"
         case .vertrag: return "doc.richtext"
         case .andere: return "doc.append"
@@ -33,7 +31,6 @@ enum DocumentType: String, CaseIterable, Identifiable {
         switch self {
         case .rechnung: return .blue
         case .bericht: return .purple
-        case .tabelle: return .green
         case .lohnzettel: return .orange
         case .vertrag: return .red
         case .andere: return .pink

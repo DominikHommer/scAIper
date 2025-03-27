@@ -10,28 +10,33 @@ import SwiftUI
 
 struct FolderDetailView: View {
     let category: String
-    @State private var files: [URL] = []
+    @StateObject private var viewModel: FolderDetailViewModel
+    
+    init(category: String) {
+        self.category = category
+        _viewModel = StateObject(wrappedValue: FolderDetailViewModel(category: category))
+    }
     
     var body: some View {
-        List(files, id: \.self) { file in
-            NavigationLink(destination: DocumentDetailView(fileURL: file)) {
-                Text(file.lastPathComponent)
+        List {
+            ForEach(viewModel.files, id: \.self) { file in
+                NavigationLink(destination: DocumentDetailView(fileURL: file)) {
+                    HStack {
+                        Image(systemName: file.fileIcon)
+                        Text(file.lastPathComponent)
+                    }
+                }
             }
+            .onDelete(perform: viewModel.deleteDocument)
         }
         .navigationTitle(category)
         .onAppear {
-            loadFiles()
-        }
-    }
-    
-    func loadFiles() {
-        let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let categoryURL = documentsURL.appendingPathComponent(category)
-        do {
-            files = try fileManager.contentsOfDirectory(at: categoryURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-        } catch {
-            print("Fehler beim Laden der Dateien: \(error)")
+            viewModel.loadFiles()
         }
     }
 }
+
+#Preview {
+    FolderDetailView(category: "Rechnung")
+}
+

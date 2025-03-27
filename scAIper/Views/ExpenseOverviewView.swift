@@ -39,7 +39,6 @@ struct ExpenseOverviewView: View {
             .frame(height: 300)
             .padding()
 
-            // Liste der Ausgaben
             List {
                 ForEach(expenses) { expense in
                     HStack {
@@ -55,7 +54,6 @@ struct ExpenseOverviewView: View {
     }
 }
 
-// Modell für Ausgaben
 struct Expense: Identifiable {
     let id = UUID()
     let category: String

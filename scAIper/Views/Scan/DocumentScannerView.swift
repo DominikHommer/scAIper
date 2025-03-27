@@ -34,7 +34,6 @@ struct DocumentScannerView: UIViewControllerRepresentable {
         }
 
         func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
-            // Für dieses Beispiel nehmen wir nur die erste Seite.
             if scan.pageCount > 0 {
                 let image = scan.imageOfPage(at: 0)
                 parent.scannedImage = image

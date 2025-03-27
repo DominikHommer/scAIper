@@ -9,41 +9,34 @@ import SwiftUI
 struct SaveDocumentView: View {
     @Environment(\.dismiss) var dismiss
     @State private var fileName: String = ""
-    @State private var selectedCategory: String = "Rechnungen"
-    @State private var selectedFileSuffix: String = ".txt"
-
-    let categories = ["Rechnungen", "Verträge", "Lohnbescheide", "Briefe", "Berichte", "Andere"]
-    let fileCategories = [".txt", ".pdf", ".csv"]
-    let documentText: String
+    
+    let documentType: DocumentType
+    let layoutType: LayoutType
+    let sourceURL: URL
     
     var body: some View {
         NavigationStack {
             Form {
                 Section(header: Text("Dateiname")) {
-                    TextField("Name eingeben", text: $fileName)
-                        .disableAutocorrection(true)
-                }
-                Section(header: Text("Kategorie auswählen")) {
-                    Picker("Kategorie", selection: $selectedCategory) {
-                        ForEach(categories, id: \.self) { cat in
-                            Text(cat)
-                        }
+                    HStack {
+                        TextField("Name eingeben", text: $fileName)
+                            .disableAutocorrection(true)
+                        Text(layoutType.fileSuffix)
+                            .foregroundColor(.gray)
                     }
-                    .pickerStyle(.menu)
                 }
-                Section(header: Text("Speicherformat auswählen")) {
-                    Picker("Speicherformat", selection: $selectedFileSuffix) {
-                        ForEach(fileCategories, id: \.self) { cat in
-                            Text(cat)
+                Section {
+                    Button("Dokument speichern") {
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
+                        let timestampString = dateFormatter.string(from: Date())
+                        
+                        guard !fileName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+                        let fullFileName = "\(fileName)_\(documentType.id)_\(layoutType.id)_\(timestampString)\(layoutType.fileSuffix)"
+                        Task(priority: .userInitiated) {
+                            DocumentSaver.saveDocument(sourceURL: sourceURL, fileName: fullFileName, documentType: documentType, layoutType: layoutType)
+                            dismiss()
                         }
-                    }
-                    .pickerStyle(.segmented)
-                }
-                Button("Dokument speichern") {
-                    guard !fileName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-                    Task(priority: .userInitiated) {
-                        DocumentSaver.saveDocument(documentText: documentText, fileName: fileName, selectedCategory: selectedCategory, fileSuffix: selectedFileSuffix)
-                        dismiss()
                     }
                 }
             }
@@ -51,5 +44,6 @@ struct SaveDocumentView: View {
         }
     }
 }
+
 
 

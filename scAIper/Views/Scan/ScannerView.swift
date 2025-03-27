@@ -8,11 +8,8 @@ import SwiftUI
 
 struct ScannerView: View {
     let selectedDocument: DocumentType
-    
-    @State private var isShowingCamera = false
-    @State private var scannedImage: UIImage? = nil
-    @State private var navigateToOCR = false
-    
+    @StateObject private var viewModel = ScannerViewModel()
+
     var body: some View {
         VStack {
             Text("Scanne: \(selectedDocument.rawValue)")
@@ -40,24 +37,22 @@ struct ScannerView: View {
                 }
             }
             .onTapGesture {
-                isShowingCamera = true
+                viewModel.scanTapped()
             }
             .padding(.bottom, 40)
             
             Spacer()
         }
-        .fullScreenCover(isPresented: $isShowingCamera, onDismiss: {
-            if scannedImage != nil {
-                navigateToOCR = true
-            }
+        .fullScreenCover(isPresented: $viewModel.isShowingCamera, onDismiss: {
+            viewModel.didDismissCamera()
         }) {
-            DocumentScannerView(scannedImage: $scannedImage, isPresented: $isShowingCamera)
+            DocumentScannerView(scannedImage: $viewModel.scannedImage, isPresented: $viewModel.isShowingCamera)
                 .ignoresSafeArea()
         }
-        .navigationDestination(isPresented: $navigateToOCR) {
+        .navigationDestination(isPresented: $viewModel.navigateToOCR) {
             OCRTextView(
-                scannedImage: $scannedImage,
-                isShowingCamera: $isShowingCamera,
+                scannedImage: $viewModel.scannedImage,
+                isShowingCamera: $viewModel.isShowingCamera,
                 documentType: selectedDocument
             )
             .toolbar(.hidden, for: .tabBar)

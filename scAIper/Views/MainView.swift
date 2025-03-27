@@ -15,7 +15,7 @@ struct MainView: View {
                     Label("Scannen", systemImage: "camera.viewfinder")
                 }
             
-            DocumentListView()
+            FolderListView()
                 .tabItem {
                     Label("Dokumente", systemImage: "folder.fill")
                 }
