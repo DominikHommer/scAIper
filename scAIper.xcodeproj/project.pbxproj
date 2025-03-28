@@ -34,6 +34,10 @@
 		FF398DA12D95C72900364262 /* FolderDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DA02D95C72900364262 /* FolderDetailViewModel.swift */; };
 		FF398DA32D95C77F00364262 /* FolderListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DA22D95C77F00364262 /* FolderListViewModel.swift */; };
 		FF398DA52D95C7F100364262 /* DocumentDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DA42D95C7F100364262 /* DocumentDetailViewModel.swift */; };
+		FF398DA72D96BEC700364262 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DA62D96BEC700364262 /* ChatMessage.swift */; };
+		FF398DA92D96BEE100364262 /* ChatbotViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DA82D96BEE100364262 /* ChatbotViewModel.swift */; };
+		FF398DAB2D96BF0E00364262 /* ChatbotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DAA2D96BF0E00364262 /* ChatbotService.swift */; };
+		FF398DAD2D96C17900364262 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = FF398DAC2D96C17500364262 /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,9 +58,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		FF398CC02D887B6900364262 /* scAIper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = scAIper.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		FF398CD02D887B6A00364262 /* scAIperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = scAIperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		FF398CDA2D887B6A00364262 /* scAIperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = scAIperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF398CC02D887B6900364262 /* scAIper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = scAIper.app; path = "/Users/MeinNotebook/scAIper/build/Debug-iphoneos/scAIper.app"; sourceTree = "<absolute>"; };
+		FF398CD02D887B6A00364262 /* scAIperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = scAIperTests.xctest; path = "/Users/MeinNotebook/scAIper/build/Debug-iphoneos/scAIper.app/PlugIns/scAIperTests.xctest"; sourceTree = "<absolute>"; };
+		FF398CDA2D887B6A00364262 /* scAIperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = scAIperUITests.xctest; path = "/Users/MeinNotebook/scAIper/build/Debug-iphoneos/scAIperUITests-Runner.app/PlugIns/scAIperUITests.xctest"; sourceTree = "<absolute>"; };
 		FF398D392D89BE8000364262 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FF398D3B2D89BE8000364262 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FF398D3D2D89BE8000364262 /* ChatbotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatbotView.swift; sourceTree = "<group>"; };
@@ -85,6 +89,10 @@
 		FF398DA02D95C72900364262 /* FolderDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderDetailViewModel.swift; sourceTree = "<group>"; };
 		FF398DA22D95C77F00364262 /* FolderListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderListViewModel.swift; sourceTree = "<group>"; };
 		FF398DA42D95C7F100364262 /* DocumentDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDetailViewModel.swift; sourceTree = "<group>"; };
+		FF398DA62D96BEC700364262 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		FF398DA82D96BEE100364262 /* ChatbotViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatbotViewModel.swift; sourceTree = "<group>"; };
+		FF398DAA2D96BF0E00364262 /* ChatbotService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatbotService.swift; sourceTree = "<group>"; };
+		FF398DAC2D96C17500364262 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -131,18 +139,8 @@
 				FF398D4A2D89BE8000364262 /* scAIper */,
 				FF398CD32D887B6A00364262 /* scAIperTests */,
 				FF398CDD2D887B6A00364262 /* scAIperUITests */,
-				FF398CC12D887B6900364262 /* Products */,
+				FF398DAC2D96C17500364262 /* .gitignore */,
 			);
-			sourceTree = "<group>";
-		};
-		FF398CC12D887B6900364262 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FF398CC02D887B6900364262 /* scAIper.app */,
-				FF398CD02D887B6A00364262 /* scAIperTests.xctest */,
-				FF398CDA2D887B6A00364262 /* scAIperUITests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		FF398D3A2D89BE8000364262 /* Preview Content */ = {
@@ -217,6 +215,7 @@
 		FF398D662D8C110500364262 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				FF398DA82D96BEE100364262 /* ChatbotViewModel.swift */,
 				FF398DA42D95C7F100364262 /* DocumentDetailViewModel.swift */,
 				FF398DA22D95C77F00364262 /* FolderListViewModel.swift */,
 				FF398DA02D95C72900364262 /* FolderDetailViewModel.swift */,
@@ -230,6 +229,7 @@
 		FF398D692D8C116800364262 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				FF398DAA2D96BF0E00364262 /* ChatbotService.swift */,
 				FF398D7E2D8D443800364262 /* DocumentSaver.swift */,
 				FF398D792D8C1C0400364262 /* TextClustering.swift */,
 				FF398D722D8C154300364262 /* OCRManager.swift */,
@@ -240,6 +240,7 @@
 		FF398D7D2D8D443100364262 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				FF398DA62D96BEC700364262 /* ChatMessage.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -345,7 +346,7 @@
 			mainGroup = FF398CB72D887B6900364262;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = FF398CC12D887B6900364262 /* Products */;
+			productRefGroup = FF398CB72D887B6900364262;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -370,6 +371,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF398DAD2D96C17900364262 /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,12 +398,14 @@
 				FF398D4F2D89BE8000364262 /* FolderListView.swift in Sources */,
 				FF398D7F2D8D443800364262 /* DocumentSaver.swift in Sources */,
 				FF398D6F2D8C11D200364262 /* OcrViewModel.swift in Sources */,
+				FF398DAB2D96BF0E00364262 /* ChatbotService.swift in Sources */,
 				FF398D512D89BE8000364262 /* ExpenseOverviewView.swift in Sources */,
 				FF398D772D8C17AF00364262 /* FullScreenImageView.swift in Sources */,
 				FF398D522D89BE8000364262 /* OCRTextView.swift in Sources */,
 				FF398DA52D95C7F100364262 /* DocumentDetailViewModel.swift in Sources */,
 				FF398D532D89BE8000364262 /* scAIperApp.swift in Sources */,
 				FF398D9D2D95C51400364262 /* PDFKitView.swift in Sources */,
+				FF398DA72D96BEC700364262 /* ChatMessage.swift in Sources */,
 				FF398D7C2D8C70F600364262 /* SaveDocumentView.swift in Sources */,
 				FF398D992D92F72B00364262 /* CSVTableView.swift in Sources */,
 				FF398DA32D95C77F00364262 /* FolderListViewModel.swift in Sources */,
@@ -409,6 +413,7 @@
 				FF398D9B2D95C05700364262 /* ScannerViewModel.swift in Sources */,
 				FF398D542D89BE8000364262 /* FolderDetailView.swift in Sources */,
 				FF398D552D89BE8000364262 /* ChatbotView.swift in Sources */,
+				FF398DA92D96BEE100364262 /* ChatbotViewModel.swift in Sources */,
 				FF398D732D8C154300364262 /* OCRManager.swift in Sources */,
 				FF398D9F2D95C5BA00364262 /* CSVTableViewModel.swift in Sources */,
 				FF398D572D89BE8000364262 /* SplashScreenView.swift in Sources */,

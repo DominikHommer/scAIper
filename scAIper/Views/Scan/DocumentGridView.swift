@@ -33,7 +33,7 @@ enum DocumentType: String, CaseIterable, Identifiable {
         case .bericht: return .purple
         case .lohnzettel: return .orange
         case .vertrag: return .red
-        case .andere: return .pink
+        case .andere: return .green
         }
     }
 }
