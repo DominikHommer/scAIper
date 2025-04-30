@@ -8,7 +8,7 @@ import Foundation
 import UIKit
 import PDFKit
 
-enum LayoutType: String, CaseIterable, Identifiable {
+enum LayoutType: String, CaseIterable, Identifiable, Codable {
     case text = "Text"
     case tabelle = "Tabelle"
     var id: String { self.rawValue }
@@ -24,13 +24,11 @@ enum LayoutType: String, CaseIterable, Identifiable {
 }
 
 class OcrViewModel: ObservableObject {
-    // OCR-Generierung
     @Published var extractedText: String = ""
     @Published var isScanning: Bool = false
     @Published var hasAttemptedExtraction: Bool = false
     @Published var sourceURL: URL? = nil
 
-    // Zustände für die Scan-Animation
     @Published var scanProgress: CGFloat = 0
     @Published var dotOffsetX: CGFloat = 0
     @Published var time: Double = 0.0
@@ -38,12 +36,11 @@ class OcrViewModel: ObservableObject {
 
     private var animationTimer: Timer? = nil
 
-    // Gemeinsame Methode zum Starten der OCR-Generierung
     private func startOcrAndGenerate(
         for image: UIImage,
         layout: LayoutType,
         fileName: String,
-        generator: (UIImage, @escaping (Data?) -> Void) -> Void,
+        generator: (UIImage, @escaping (Data?, String?) -> Void) -> Void,
         completion: @escaping (URL?) -> Void
     ) {
         DispatchQueue.main.async {
@@ -53,12 +50,16 @@ class OcrViewModel: ObservableObject {
             self.sourceURL = nil
         }
 
-        generator(image) { [weak self] data in
+        generator(image) { [weak self] data, recognizedText in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 self.isScanning = false
                 self.hasAttemptedExtraction = true
-
+                
+                if let recognizedText = recognizedText {
+                    self.extractedText = recognizedText
+                }
+                
                 guard let data = data else {
                     completion(nil)
                     return
@@ -76,6 +77,7 @@ class OcrViewModel: ObservableObject {
             }
         }
     }
+
 
     func startOcrAndGeneratePDF(on image: UIImage, layout: LayoutType, completion: @escaping (URL?) -> Void) {
         startOcrAndGenerate(

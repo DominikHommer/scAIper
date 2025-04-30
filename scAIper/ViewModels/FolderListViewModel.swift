@@ -52,10 +52,12 @@ class FolderListViewModel: ObservableObject {
             do {
                 try fileManager.removeItem(at: categoryURL)
                 print("Ordner \(category) gelöscht")
+                DocumentMetadataManager.shared.removeMetadata(forCategory: category)
             } catch {
                 print("Fehler beim Löschen des Ordners \(category): \(error)")
             }
         }
         loadCategories()
     }
+
 }

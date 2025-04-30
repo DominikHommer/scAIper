@@ -10,13 +10,21 @@ import SwiftUI
 struct ChatbotView: View {
     @StateObject private var viewModel = ChatbotViewModel()
     @State private var userInput: String = ""
+    @FocusState private var isTextFieldFocused: Bool
     
     var body: some View {
         VStack {
-            Text("Dokumenten-Chatbot")
-                .font(.title)
-                .fontWeight(.bold)
-                .padding(.top, 20)
+            HStack {
+                Text("Dokumenten-Chatbot")
+                    .font(.title)
+                    .fontWeight(.bold)
+                Spacer()
+                Button("Reset") {
+                    viewModel.resetHistory()
+                }
+                .padding(.trailing)
+            }
+            .padding(.top, 20)
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
@@ -30,10 +38,12 @@ struct ChatbotView: View {
             HStack {
                 TextField("Frage den Chatbot...", text: $userInput)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($isTextFieldFocused)
                 
                 Button {
                     viewModel.sendMessage(userInput)
                     userInput = ""
+                    isTextFieldFocused = false
                 } label: {
                     Image(systemName: "paperplane.fill")
                         .foregroundColor(.blue)
@@ -41,13 +51,15 @@ struct ChatbotView: View {
             }
             .padding()
         }
+        .onTapGesture {
+            isTextFieldFocused = false
+        }
     }
 }
 
-// UI-Komponente für Chat-Nachrichten
 struct ChatBubble: View {
     let message: ChatMessage
-    
+
     var body: some View {
         HStack {
             if message.isUser {
@@ -59,21 +71,32 @@ struct ChatBubble: View {
                     .cornerRadius(12)
                     .frame(maxWidth: 250, alignment: .trailing)
             } else {
-                Text(message.text)
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .foregroundColor(.black)
-                    .cornerRadius(12)
-                    .frame(maxWidth: 250, alignment: .leading)
+                if message.isLoading {
+                    LoadingIndicatorView()
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(12)
+                        .frame(maxWidth: 250, alignment: .leading)
+                } else {
+                    Text(message.text)
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .foregroundColor(.black)
+                        .cornerRadius(12)
+                        .frame(maxWidth: 250, alignment: .leading)
+                }
                 Spacer()
             }
         }
     }
 }
 
+
 #Preview {
     ChatbotView()
 }
+
+
 
 
 

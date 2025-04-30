@@ -4,16 +4,19 @@
 //
 //  Created by Dominik Hommer on 20.03.25.
 //
-import PDFKit
-import CoreGraphics
+
 import UIKit
 import Vision
+import NaturalLanguage
 
-class OCRManager {
+class OCRManager: NSObject {
+    static let shared = OCRManager()
+    static var modelNameDocCheck: String = "llama-3.3-70b-versatile"
 
-    static func generatePDFWithOCR(from image: UIImage, completion: @escaping (Data?) -> Void) {
+    // Diese Methode generiert ein PDF aus einem UIImage mithilfe von OCR.
+    static func generatePDFWithOCR(from image: UIImage, completion: @escaping (Data?, String?) -> Void) {
         guard let cgImage = image.cgImage else {
-            completion(nil)
+            completion(nil, nil)
             return
         }
         
@@ -23,16 +26,16 @@ class OCRManager {
         let request = VNRecognizeTextRequest { request, error in
             if let error = error {
                 print("Fehler bei der Texterkennung: \(error)")
-                completion(nil)
+                completion(nil, nil)
                 return
             }
             
             guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                completion(nil)
+                completion(nil, nil)
                 return
             }
             
-            let sortedObservations = observations.sorted { (obs1, obs2) -> Bool in
+            let sortedObservations = observations.sorted { obs1, obs2 in
                 let box1 = obs1.boundingBox
                 let box2 = obs2.boundingBox
                 let top1 = box1.origin.y + box1.size.height
@@ -44,13 +47,13 @@ class OCRManager {
                 }
             }
             
-            let combinedText = sortedObservations.compactMap { observation -> String? in
-                return observation.topCandidates(1).first?.string
+            let combinedText = sortedObservations.compactMap { observation in
+                observation.topCandidates(1).first?.string
             }.joined(separator: "\n")
             
             if combinedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 print("Kein Text erkannt, kein PDF wird erstellt.")
-                completion(nil)
+                completion(nil, nil)
                 return
             }
             
@@ -75,7 +78,7 @@ class OCRManager {
                 attributedText.draw(in: textRect)
             }
             
-            completion(data)
+            completion(data, combinedText)
         }
         
         request.recognitionLevel = .accurate
@@ -87,194 +90,135 @@ class OCRManager {
                 try handler.perform([request])
             } catch {
                 print("OCR-Fehler: \(error)")
-                completion(nil)
+                completion(nil, nil)
             }
         }
     }
-
-
-    static func generateCSVWithOCR(from image: UIImage, completion: @escaping (Data?) -> Void) {
+    
+    // Diese Methode generiert eine CSV aus einem UIImage mithilfe von OCR.
+    // Die eigentliche Logik wird in Hilfsstrukturen ausgelagert.
+    static func generateCSVWithOCR(from image: UIImage, completion: @escaping (Data?, String?) -> Void) {
         guard let cgImage = image.cgImage else {
-            completion(nil)
+            completion(nil, nil)
             return
         }
         
         print("OCR-CSV-Erstellung gestartet")
         
-        let imageWidth = image.size.width
-        let imageHeight = image.size.height
-
-        let request = VNRecognizeTextRequest { request, error in
-            if let error = error {
-                print(" Fehler bei der Texterkennung: \(error)")
-                completion(nil)
-                return
-            }
-
-            guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                completion(nil)
-                return
-            }
-
-            var elements: [(text: String, x: CGFloat, y: CGFloat)] = []
-
-            for observation in observations {
-                guard let candidate = observation.topCandidates(1).first else { continue }
-
-                let box = observation.boundingBox
-                let x = box.origin.x * imageWidth
-                let y = (1.0 - box.origin.y - box.size.height) * imageHeight
-                elements.append((candidate.string, x, y))
-            }
-
-
-            let xThreshold: CGFloat = 40.0
-            let yThreshold: CGFloat = 30.0
-
-            func clusterPositions(_ positions: [CGFloat], threshold: CGFloat) -> [CGFloat] {
-                let sorted = positions.sorted()
-                var clusters: [[CGFloat]] = []
-
-                for pos in sorted {
-                    if let lastCluster = clusters.last, let last = lastCluster.last,
-                       abs(pos - last) < threshold {
-                        clusters[clusters.count - 1].append(pos)
-                    } else {
-                        clusters.append([pos])
-                    }
-                }
-
-                return clusters.map { cluster in
-                    let sum = cluster.reduce(0, +)
-                    return sum / CGFloat(cluster.count)
-                }
-            }
-
-            let columnCenters = clusterPositions(elements.map { $0.x }, threshold: xThreshold)
-            let rowCenters = clusterPositions(elements.map { $0.y }, threshold: yThreshold)
-
-            print(" Spalten erkannt: \(columnCenters.count), Zeilen erkannt: \(rowCenters.count)")
-
-            var grid: [[String]] = Array(
-                repeating: Array(repeating: "", count: columnCenters.count),
-                count: rowCenters.count
-            )
-
-            for element in elements {
-                guard let rowIndex = rowCenters.firstIndex(where: { abs($0 - element.y) < yThreshold }),
-                      let colIndex = columnCenters.firstIndex(where: { abs($0 - element.x) < xThreshold }) else {
-                    continue
-                }
-
-                grid[rowIndex][colIndex] = element.text
-            }
-
-            var csvString = ""
-            for row in grid {
-                let line = row.joined(separator: ";")
-                csvString += line + "\n"
-            }
-            
-            if csvString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                print("Kein Text erkannt, CSV wird nicht erstellt.")
-                completion(nil)
-                return
-            }
-
-            print("CSV-Vorschau:\n\(csvString)")
-
-            let csvData = csvString.data(using: .utf8)
-            completion(csvData)
-        }
-
-        request.recognitionLevel = .accurate
-        request.usesLanguageCorrection = true
-
-        Task.detached(priority: .background) {
-            let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-            do {
-                try handler.perform([request])
-            } catch {
-                print(" OCR-Fehler: \(error)")
-                completion(nil)
-            }
-        }
-    }
-
-
-
-    
-    
-    static func recognizeText( //bleibt vorerst drin, wird aber gerade nicht verwendet
-        from image: UIImage,
-        completion: @escaping (String) -> Void
-    ) {
-        guard let cgImage = image.cgImage else {
-            completion("")
-            return
-        }
-        
         let request = VNRecognizeTextRequest { request, error in
             if let error = error {
                 print("Fehler bei der Texterkennung: \(error)")
-                completion("")
+                completion(nil, nil)
                 return
             }
             guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                completion("")
+                completion(nil, nil)
                 return
             }
             
-            let sortedObservations = observations.sorted {
-                let box0 = $0.boundingBox
-                let box1 = $1.boundingBox
-                
-                if abs(box0.midY - box1.midY) > 0.01 {
-                    return box0.midY > box1.midY
-                } else {
-                    return box0.midX < box1.midX
-                }
-            }
-            
-            let lineThreshold: CGFloat = 0.005
-            var lines: [[(observation: VNRecognizedTextObservation, text: String)]] = []
-            
-            for observation in sortedObservations {
+            // Schritt 1: Extrahiere Text-Elemente (Wort und normierte Koordinaten)
+            var elements: [(text: String, x: CGFloat, y: CGFloat)] = []
+            for observation in observations {
                 guard let candidate = observation.topCandidates(1).first else { continue }
-                let obsMidY = observation.boundingBox.midY
-                
-                var addedToLine = false
-                for i in 0..<lines.count {
-                    let lineMidY = lines[i].first!.observation.boundingBox.midY
-                    if abs(lineMidY - obsMidY) < lineThreshold {
-                        lines[i].append((observation, candidate.string))
-                        addedToLine = true
-                        break
+                let text = candidate.string
+                let tokenizer = NLTokenizer(unit: .word)
+                tokenizer.string = text
+                tokenizer.enumerateTokens(in: text.startIndex..<text.endIndex) { tokenRange, _ in
+                    let word = String(text[tokenRange])
+                    if let box = try? candidate.boundingBox(for: tokenRange) {
+                        let midX = (box.topLeft.x + box.topRight.x + box.bottomLeft.x + box.bottomRight.x) / 4.0
+                        let midY = (box.topLeft.y + box.topRight.y + box.bottomLeft.y + box.bottomRight.y) / 4.0
+                        let normX = midX       // normiert (0 ... 1)
+                        let normY = 1.0 - midY // Vision liefert y=0 oben
+                        elements.append((word, normX, normY))
                     }
+                    return true
+                }
+            }
+            print("Elements:", elements)
+            
+            // Gruppierung der Elemente
+            let groups = GridClustering.groupElementsByRadius(elements: elements, radius: 0.02)
+            var mergedElements: [(text: String, x: CGFloat, y: CGFloat)] = []
+            for group in groups {
+                let mergedText = group.map { $0.text }.joined(separator: " ")
+                let avgX = group.reduce(0, { $0 + $1.x }) / CGFloat(group.count)
+                let avgY = group.reduce(0, { $0 + $1.y }) / CGFloat(group.count)
+                mergedElements.append((text: mergedText, x: avgX, y: avgY))
+            }
+            print("mergedElements:", mergedElements)
+            
+            let yValues = mergedElements.map { $0.y }
+            let xValues = mergedElements.map { $0.x }
+            
+            let epsCandidatesY = (1...50).map { CGFloat($0) * 0.001 }  // Bereich: 0.001 ... 0.05
+            let epsCandidatesX = (5...200).map { CGFloat($0) * 0.001 }   // Bereich: 0.005 ... 0.2
+            
+            let (bestEpsY, bestScoreY) = GridClustering.bestEpsViaSilhouette(for: yValues, epsCandidates: epsCandidatesY, minSamples: 1)
+            let (bestEpsX, bestScoreX) = GridClustering.bestEpsViaSilhouette(for: xValues, epsCandidates: epsCandidatesX, minSamples: 1)
+            
+            print("Best eps for y:", bestEpsY, "with score:", bestScoreY)
+            print("Best eps for x:", bestEpsX, "with score:", bestScoreX)
+            
+            let dbscanOptimizedY = DBSCAN(eps: bestEpsY, minSamples: 1)
+            let rowLabels = dbscanOptimizedY.fit(data: yValues)
+            let dbscanOptimizedX = DBSCAN(eps: bestEpsX, minSamples: 1)
+            let colLabels = dbscanOptimizedX.fit(data: xValues)
+            
+            print("rowLabels:", rowLabels)
+            print("colLabels:", colLabels)
+            
+            let rowMapping = GridClustering.continuousLabelMapping(from: rowLabels)
+            let colMapping = GridClustering.continuousLabelMapping(from: colLabels)
+            let numberOfRows = rowMapping.count
+            let numberOfCols = colMapping.count
+            print("Ermittelte Zeilen: \(numberOfRows), Spalten: \(numberOfCols)")
+            
+            var grid: [[String]] = Array(
+                repeating: Array(repeating: "", count: numberOfCols),
+                count: numberOfRows
+            )
+            for (i, element) in mergedElements.enumerated() {
+                let originalRowLabel = rowLabels[i]
+                let originalColLabel = colLabels[i]
+                guard let rowIndex = rowMapping[originalRowLabel],
+                      let colIndex = colMapping[originalColLabel] else {
+                    print("Element ohne Zuordnung: \(element)")
+                    continue
+                }
+                if grid[rowIndex][colIndex].isEmpty {
+                    grid[rowIndex][colIndex] = element.text
+                } else {
+                    grid[rowIndex][colIndex] += " " + element.text
+                }
+            }
+            print("Initial Grid:", grid)
+            
+            // Weitere Nachbearbeitung der Tabelle via LLM-Service
+            OCRLLMService.sendLLMRequest(with: grid) { jsonResponse in
+                guard
+                    let jsonResponse = jsonResponse,
+                    let structuredTable = jsonResponse["table"] as? [[String: Any]],
+                    let header = jsonResponse["header"] as? [String]
+                else {
+                    print("Ungültige oder leere LLM-Antwort. Verwende das initiale Grid.")
+                    CSVGenerator.createCSV(from: grid, completion: completion)
+                    return
                 }
                 
-                if !addedToLine {
-                    lines.append([(observation, candidate.string)])
+                var newGrid: [[String]] = [header]
+                for rowDict in structuredTable {
+                    let rowArray: [String] = header.map { key in
+                        if let value = rowDict[key] {
+                            return "\(value)"
+                        }
+                        return ""
+                    }
+                    newGrid.append(rowArray)
                 }
-            }
-            
-
-            for i in 0..<lines.count {
-                lines[i].sort {
-                    $0.observation.boundingBox.midX < $1.observation.boundingBox.midX
-                }
-            }
-            
-            let recognizedString = lines.map { line in
-                line.map { $0.text }.joined(separator: " ")
-            }.joined(separator: "\n")
-            
-            let output = recognizedString
-            
-            Task.detached(priority: .background) {
-                await MainActor.run {
-                    completion(output)
-                }
+                print("Neues strukturiertes Grid:", newGrid)
+                
+                CSVGenerator.createCSV(from: newGrid, completion: completion)
             }
         }
         
@@ -287,24 +231,9 @@ class OCRManager {
                 try handler.perform([request])
             } catch {
                 print("OCR-Fehler: \(error)")
-                completion("")
+                completion(nil, nil)
             }
         }
     }
-    
-    
-    fileprivate static func processObservations(
-        _ observations: [VNRecognizedTextObservation],
-        image: UIImage
-    ) -> String {
-        let clusters = clusterObservations(
-            observations,
-            imageSize: image.size,
-            distanceThreshold: 150.0,
-            overlapRatioThreshold: 0.0000000000000001
-        )
-        
-        let recognizedString = buildOutputString(from: clusters)
-        return recognizedString
-    }
 }
+

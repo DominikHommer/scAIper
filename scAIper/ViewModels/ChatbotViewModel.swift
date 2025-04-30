@@ -16,13 +16,18 @@ class ChatbotViewModel: ObservableObject {
     func sendMessage(_ userInput: String) {
         guard !userInput.isEmpty else { return }
         
-        // Füge Nutzereingabe hinzu
         let userMessage = ChatMessage(text: userInput, isUser: true)
         chatMessages.append(userMessage)
         
-        // Anfrage an den Service
+        // Füge eine temporäre Lade-Nachricht hinzu
+        let loadingMessage = ChatMessage(text: "", isUser: false, isLoading: true)
+        chatMessages.append(loadingMessage)
+        
         service.queryChatCompletion(input: userInput) { [weak self] result in
             DispatchQueue.main.async {
+                // Entferne die Lade-Nachricht
+                self?.chatMessages.removeAll(where: { $0.isLoading })
+                
                 switch result {
                 case .success(let botResponse):
                     let botMessage = ChatMessage(text: botResponse, isUser: false)
@@ -34,4 +39,13 @@ class ChatbotViewModel: ObservableObject {
             }
         }
     }
+
+    
+    func resetHistory() {
+        chatMessages = [
+            ChatMessage(text: "Hallo! Ich bin der Chatbot. Wie kann ich dir helfen?", isUser: false)
+        ]
+        service.resetConversation()
+    }
 }
+

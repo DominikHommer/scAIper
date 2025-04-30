@@ -27,7 +27,6 @@ class FolderDetailViewModel: ObservableObject {
                                                                 includingPropertiesForKeys: nil,
                                                                 options: .skipsHiddenFiles)
             DispatchQueue.main.async {
-                // Dateien alphabetisch sortieren
                 self.files = fileURLs.sorted { $0.lastPathComponent < $1.lastPathComponent }
             }
         } catch {
@@ -42,12 +41,14 @@ class FolderDetailViewModel: ObservableObject {
             do {
                 try fileManager.removeItem(at: file)
                 print("Dokument \(file.lastPathComponent) gelöscht")
+                DocumentMetadataManager.shared.removeMetadata(forFileURL: file)
             } catch {
                 print("Fehler beim Löschen der Datei \(file.lastPathComponent): \(error)")
             }
         }
         loadFiles()
     }
+
 }
 
 

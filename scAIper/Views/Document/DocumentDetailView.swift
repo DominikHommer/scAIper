@@ -9,14 +9,10 @@
 import SwiftUI
 
 
+
 struct DocumentDetailView: View {
     let fileURL: URL
-    @StateObject private var viewModel: DocumentDetailViewModel
-    
-    init(fileURL: URL) {
-        self.fileURL = fileURL
-        _viewModel = StateObject(wrappedValue: DocumentDetailViewModel(fileURL: fileURL))
-    }
+    @State private var documentText: String = ""
     
     var body: some View {
         Group {
@@ -27,11 +23,11 @@ struct DocumentDetailView: View {
                 CSVTableView(csvURL: fileURL)
             case "txt":
                 ScrollView {
-                    Text(viewModel.documentText)
+                    Text(documentText)
                         .padding()
                 }
                 .onAppear {
-                    viewModel.loadDocument()
+                    loadTextDocument()
                 }
             default:
                 Text("Nicht unterstütztes Dateiformat")
@@ -39,6 +35,14 @@ struct DocumentDetailView: View {
             }
         }
         .navigationTitle(fileURL.lastPathComponent)
+    }
+    
+    private func loadTextDocument() {
+        do {
+            documentText = try String(contentsOf: fileURL, encoding: .utf8)
+        } catch {
+            print("Fehler beim Laden des Dokuments: \(error)")
+        }
     }
 }
 

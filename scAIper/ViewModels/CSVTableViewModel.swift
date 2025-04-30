@@ -40,7 +40,7 @@ class CSVTableViewModel: ObservableObject {
                 if column < row.count {
                     let text = row[column]
                     let size = (text as NSString).size(withAttributes: [.font: font])
-                    maxWidth = max(maxWidth, size.width + 16) // Padding berücksichtigen
+                    maxWidth = max(maxWidth, size.width + 16)
                 }
             }
             widths.append(maxWidth)

@@ -168,7 +168,8 @@ struct OCRTextView: View {
                 SaveDocumentView(
                     documentType: documentType,
                     layoutType: selectedLayout ?? .text,
-                    sourceURL: sourceURL
+                    sourceURL: sourceURL,
+                    documentContent: viewModel.extractedText
                 )
             }
         }

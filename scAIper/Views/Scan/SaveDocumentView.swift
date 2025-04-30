@@ -3,7 +3,7 @@
 //  scAIper
 //
 //  Created by Dominik Hommer on 20.03.25.
-//
+
 import SwiftUI
 
 struct SaveDocumentView: View {
@@ -13,6 +13,7 @@ struct SaveDocumentView: View {
     let documentType: DocumentType
     let layoutType: LayoutType
     let sourceURL: URL
+    let documentContent : String
     
     var body: some View {
         NavigationStack {
@@ -34,7 +35,13 @@ struct SaveDocumentView: View {
                         guard !fileName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
                         let fullFileName = "\(fileName)_\(documentType.id)_\(layoutType.id)_\(timestampString)\(layoutType.fileSuffix)"
                         Task(priority: .userInitiated) {
-                            DocumentSaver.saveDocument(sourceURL: sourceURL, fileName: fullFileName, documentType: documentType, layoutType: layoutType)
+                            DocumentSaver.saveDocument(
+                                sourceURL: sourceURL,
+                                fileName: fullFileName,
+                                documentType: documentType,
+                                layoutType: layoutType,
+                                content: documentContent
+                            )
                             dismiss()
                         }
                     }
@@ -44,6 +51,7 @@ struct SaveDocumentView: View {
         }
     }
 }
+
 
 
 

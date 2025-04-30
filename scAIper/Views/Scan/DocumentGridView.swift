@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-enum DocumentType: String, CaseIterable, Identifiable {
+enum DocumentType: String, CaseIterable, Identifiable, Codable {
     case rechnung = "Rechnung"
     case bericht = "Bericht"
     case lohnzettel = "Lohnzettel"

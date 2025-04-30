@@ -22,7 +22,6 @@
 		FF398D6F2D8C11D200364262 /* OcrViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D6E2D8C11D200364262 /* OcrViewModel.swift */; };
 		FF398D732D8C154300364262 /* OCRManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D722D8C154300364262 /* OCRManager.swift */; };
 		FF398D772D8C17AF00364262 /* FullScreenImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D762D8C17AF00364262 /* FullScreenImageView.swift */; };
-		FF398D7A2D8C1C0400364262 /* TextClustering.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D792D8C1C0400364262 /* TextClustering.swift */; };
 		FF398D7C2D8C70F600364262 /* SaveDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D7B2D8C70F600364262 /* SaveDocumentView.swift */; };
 		FF398D7F2D8D443800364262 /* DocumentSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D7E2D8D443800364262 /* DocumentSaver.swift */; };
 		FF398D872D917C7600364262 /* DocumentScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398D862D917C7600364262 /* DocumentScannerView.swift */; };
@@ -38,6 +37,18 @@
 		FF398DA92D96BEE100364262 /* ChatbotViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DA82D96BEE100364262 /* ChatbotViewModel.swift */; };
 		FF398DAB2D96BF0E00364262 /* ChatbotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DAA2D96BF0E00364262 /* ChatbotService.swift */; };
 		FF398DAD2D96C17900364262 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = FF398DAC2D96C17500364262 /* .gitignore */; };
+		FF398DB12D96DCE900364262 /* RAGManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DB02D96DCE900364262 /* RAGManager.swift */; };
+		FF398DB72D98077000364262 /* Embedding.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DB62D98077000364262 /* Embedding.swift */; };
+		FF398DB92D980E2900364262 /* DocumentMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DB82D980E2900364262 /* DocumentMetadata.swift */; };
+		FF398DBB2D980E5000364262 /* DocumentMetadataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF398DBA2D980E5000364262 /* DocumentMetadataManager.swift */; };
+		FFA495E42DA423DA005B9BC4 /* LoadingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA495E32DA423DA005B9BC4 /* LoadingIndicatorView.swift */; };
+		FFA495E62DA58F92005B9BC4 /* DBSCAN.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA495E52DA58F92005B9BC4 /* DBSCAN.swift */; };
+		FFA495EC2DA66DD2005B9BC4 /* GridClustering.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA495EB2DA66DD2005B9BC4 /* GridClustering.swift */; };
+		FFA495EE2DA66DE2005B9BC4 /* CSVGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA495ED2DA66DE2005B9BC4 /* CSVGenerator.swift */; };
+		FFA495F02DA66DF7005B9BC4 /* OCRLLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA495EF2DA66DF7005B9BC4 /* OCRLLMService.swift */; };
+		FFA495F42DA834A5005B9BC4 /* ScoredDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA495F32DA834A5005B9BC4 /* ScoredDocument.swift */; };
+		FFA495F62DA83903005B9BC4 /* Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA495F52DA83903005B9BC4 /* Chunk.swift */; };
+		FFA495F82DA83921005B9BC4 /* ChunkingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA495F72DA83921005B9BC4 /* ChunkingService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,9 +69,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		FF398CC02D887B6900364262 /* scAIper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = scAIper.app; path = "/Users/MeinNotebook/scAIper/build/Debug-iphoneos/scAIper.app"; sourceTree = "<absolute>"; };
-		FF398CD02D887B6A00364262 /* scAIperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = scAIperTests.xctest; path = "/Users/MeinNotebook/scAIper/build/Debug-iphoneos/scAIper.app/PlugIns/scAIperTests.xctest"; sourceTree = "<absolute>"; };
-		FF398CDA2D887B6A00364262 /* scAIperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = scAIperUITests.xctest; path = "/Users/MeinNotebook/scAIper/build/Debug-iphoneos/scAIperUITests-Runner.app/PlugIns/scAIperUITests.xctest"; sourceTree = "<absolute>"; };
 		FF398D392D89BE8000364262 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FF398D3B2D89BE8000364262 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FF398D3D2D89BE8000364262 /* ChatbotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatbotView.swift; sourceTree = "<group>"; };
@@ -77,7 +85,6 @@
 		FF398D6E2D8C11D200364262 /* OcrViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OcrViewModel.swift; sourceTree = "<group>"; };
 		FF398D722D8C154300364262 /* OCRManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRManager.swift; sourceTree = "<group>"; };
 		FF398D762D8C17AF00364262 /* FullScreenImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenImageView.swift; sourceTree = "<group>"; };
-		FF398D792D8C1C0400364262 /* TextClustering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextClustering.swift; sourceTree = "<group>"; };
 		FF398D7B2D8C70F600364262 /* SaveDocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDocumentView.swift; sourceTree = "<group>"; };
 		FF398D7E2D8D443800364262 /* DocumentSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentSaver.swift; sourceTree = "<group>"; };
 		FF398D862D917C7600364262 /* DocumentScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
@@ -93,6 +100,21 @@
 		FF398DA82D96BEE100364262 /* ChatbotViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatbotViewModel.swift; sourceTree = "<group>"; };
 		FF398DAA2D96BF0E00364262 /* ChatbotService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatbotService.swift; sourceTree = "<group>"; };
 		FF398DAC2D96C17500364262 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		FF398DB02D96DCE900364262 /* RAGManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGManager.swift; sourceTree = "<group>"; };
+		FF398DB62D98077000364262 /* Embedding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Embedding.swift; sourceTree = "<group>"; };
+		FF398DB82D980E2900364262 /* DocumentMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentMetadata.swift; sourceTree = "<group>"; };
+		FF398DBA2D980E5000364262 /* DocumentMetadataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentMetadataManager.swift; sourceTree = "<group>"; };
+		FFA495DA2D9D2B67005B9BC4 /* scAIper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = scAIper.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FFA495DB2D9D2B67005B9BC4 /* scAIperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = scAIperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FFA495DC2D9D2B67005B9BC4 /* scAIperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = scAIperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FFA495E32DA423DA005B9BC4 /* LoadingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicatorView.swift; sourceTree = "<group>"; };
+		FFA495E52DA58F92005B9BC4 /* DBSCAN.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBSCAN.swift; sourceTree = "<group>"; };
+		FFA495EB2DA66DD2005B9BC4 /* GridClustering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridClustering.swift; sourceTree = "<group>"; };
+		FFA495ED2DA66DE2005B9BC4 /* CSVGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVGenerator.swift; sourceTree = "<group>"; };
+		FFA495EF2DA66DF7005B9BC4 /* OCRLLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRLLMService.swift; sourceTree = "<group>"; };
+		FFA495F32DA834A5005B9BC4 /* ScoredDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoredDocument.swift; sourceTree = "<group>"; };
+		FFA495F52DA83903005B9BC4 /* Chunk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunk.swift; sourceTree = "<group>"; };
+		FFA495F72DA83921005B9BC4 /* ChunkingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChunkingService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -140,6 +162,9 @@
 				FF398CD32D887B6A00364262 /* scAIperTests */,
 				FF398CDD2D887B6A00364262 /* scAIperUITests */,
 				FF398DAC2D96C17500364262 /* .gitignore */,
+				FFA495DA2D9D2B67005B9BC4 /* scAIper.app */,
+				FFA495DB2D9D2B67005B9BC4 /* scAIperTests.xctest */,
+				FFA495DC2D9D2B67005B9BC4 /* scAIperUITests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -215,6 +240,7 @@
 		FF398D662D8C110500364262 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				FFA495E32DA423DA005B9BC4 /* LoadingIndicatorView.swift */,
 				FF398DA82D96BEE100364262 /* ChatbotViewModel.swift */,
 				FF398DA42D95C7F100364262 /* DocumentDetailViewModel.swift */,
 				FF398DA22D95C77F00364262 /* FolderListViewModel.swift */,
@@ -229,9 +255,15 @@
 		FF398D692D8C116800364262 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				FFA495F72DA83921005B9BC4 /* ChunkingService.swift */,
+				FFA495EF2DA66DF7005B9BC4 /* OCRLLMService.swift */,
+				FFA495ED2DA66DE2005B9BC4 /* CSVGenerator.swift */,
+				FFA495EB2DA66DD2005B9BC4 /* GridClustering.swift */,
+				FFA495E52DA58F92005B9BC4 /* DBSCAN.swift */,
+				FF398DBA2D980E5000364262 /* DocumentMetadataManager.swift */,
+				FF398DB02D96DCE900364262 /* RAGManager.swift */,
 				FF398DAA2D96BF0E00364262 /* ChatbotService.swift */,
 				FF398D7E2D8D443800364262 /* DocumentSaver.swift */,
-				FF398D792D8C1C0400364262 /* TextClustering.swift */,
 				FF398D722D8C154300364262 /* OCRManager.swift */,
 			);
 			path = Services;
@@ -240,6 +272,10 @@
 		FF398D7D2D8D443100364262 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				FFA495F52DA83903005B9BC4 /* Chunk.swift */,
+				FFA495F32DA834A5005B9BC4 /* ScoredDocument.swift */,
+				FF398DB82D980E2900364262 /* DocumentMetadata.swift */,
+				FF398DB62D98077000364262 /* Embedding.swift */,
 				FF398DA62D96BEC700364262 /* ChatMessage.swift */,
 			);
 			path = Models;
@@ -264,7 +300,7 @@
 			packageProductDependencies = (
 			);
 			productName = scAIper;
-			productReference = FF398CC02D887B6900364262 /* scAIper.app */;
+			productReference = FFA495DA2D9D2B67005B9BC4 /* scAIper.app */;
 			productType = "com.apple.product-type.application";
 		};
 		FF398CCF2D887B6A00364262 /* scAIperTests */ = {
@@ -287,7 +323,7 @@
 			packageProductDependencies = (
 			);
 			productName = scAIperTests;
-			productReference = FF398CD02D887B6A00364262 /* scAIperTests.xctest */;
+			productReference = FFA495DB2D9D2B67005B9BC4 /* scAIperTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		FF398CD92D887B6A00364262 /* scAIperUITests */ = {
@@ -310,7 +346,7 @@
 			packageProductDependencies = (
 			);
 			productName = scAIperUITests;
-			productReference = FF398CDA2D887B6A00364262 /* scAIperUITests.xctest */;
+			productReference = FFA495DC2D9D2B67005B9BC4 /* scAIperUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -394,22 +430,32 @@
 				FF398D4D2D89BE8000364262 /* ScannerView.swift in Sources */,
 				FF398D972D92DE4300364262 /* DocumentGridView.swift in Sources */,
 				FF398D872D917C7600364262 /* DocumentScannerView.swift in Sources */,
+				FFA495F02DA66DF7005B9BC4 /* OCRLLMService.swift in Sources */,
 				FF398D4E2D89BE8000364262 /* MainView.swift in Sources */,
 				FF398D4F2D89BE8000364262 /* FolderListView.swift in Sources */,
 				FF398D7F2D8D443800364262 /* DocumentSaver.swift in Sources */,
+				FFA495F62DA83903005B9BC4 /* Chunk.swift in Sources */,
+				FFA495F42DA834A5005B9BC4 /* ScoredDocument.swift in Sources */,
+				FF398DB12D96DCE900364262 /* RAGManager.swift in Sources */,
 				FF398D6F2D8C11D200364262 /* OcrViewModel.swift in Sources */,
 				FF398DAB2D96BF0E00364262 /* ChatbotService.swift in Sources */,
+				FFA495EC2DA66DD2005B9BC4 /* GridClustering.swift in Sources */,
 				FF398D512D89BE8000364262 /* ExpenseOverviewView.swift in Sources */,
+				FFA495E62DA58F92005B9BC4 /* DBSCAN.swift in Sources */,
+				FF398DBB2D980E5000364262 /* DocumentMetadataManager.swift in Sources */,
 				FF398D772D8C17AF00364262 /* FullScreenImageView.swift in Sources */,
 				FF398D522D89BE8000364262 /* OCRTextView.swift in Sources */,
 				FF398DA52D95C7F100364262 /* DocumentDetailViewModel.swift in Sources */,
 				FF398D532D89BE8000364262 /* scAIperApp.swift in Sources */,
+				FF398DB92D980E2900364262 /* DocumentMetadata.swift in Sources */,
 				FF398D9D2D95C51400364262 /* PDFKitView.swift in Sources */,
+				FFA495EE2DA66DE2005B9BC4 /* CSVGenerator.swift in Sources */,
 				FF398DA72D96BEC700364262 /* ChatMessage.swift in Sources */,
 				FF398D7C2D8C70F600364262 /* SaveDocumentView.swift in Sources */,
 				FF398D992D92F72B00364262 /* CSVTableView.swift in Sources */,
 				FF398DA32D95C77F00364262 /* FolderListViewModel.swift in Sources */,
-				FF398D7A2D8C1C0400364262 /* TextClustering.swift in Sources */,
+				FFA495F82DA83921005B9BC4 /* ChunkingService.swift in Sources */,
+				FFA495E42DA423DA005B9BC4 /* LoadingIndicatorView.swift in Sources */,
 				FF398D9B2D95C05700364262 /* ScannerViewModel.swift in Sources */,
 				FF398D542D89BE8000364262 /* FolderDetailView.swift in Sources */,
 				FF398D552D89BE8000364262 /* ChatbotView.swift in Sources */,
@@ -417,6 +463,7 @@
 				FF398D732D8C154300364262 /* OCRManager.swift in Sources */,
 				FF398D9F2D95C5BA00364262 /* CSVTableViewModel.swift in Sources */,
 				FF398D572D89BE8000364262 /* SplashScreenView.swift in Sources */,
+				FF398DB72D98077000364262 /* Embedding.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
