@@ -36,7 +36,8 @@ final class RAGManager {
                             layoutType: layoutType,
                             lastModified: Date(),
                             embedding: embeddingModel,
-                            content: chunk.text
+                            content: chunk.text,
+                            keywords: nil
                         )
 
                         metadataList.append(metadata)

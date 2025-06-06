@@ -8,7 +8,15 @@ import Foundation
 import UIKit
 
 struct DocumentSaver {
-    static func saveDocument(sourceURL: URL, fileName: String, documentType: DocumentType, layoutType: LayoutType, content: String, completion: (() -> Void)? = nil) {
+    static func saveDocument(
+        sourceURL: URL,
+        fileName: String,
+        documentType: DocumentType,
+        layoutType: LayoutType,
+        content: String,
+        keywords: [String: String]? = nil,
+        completion: (() -> Void)? = nil
+    ) {
         let fileManager = FileManager.default
         let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
         print("Documents-Verzeichnis: \(documentsURL)")
@@ -39,7 +47,17 @@ struct DocumentSaver {
                 layoutType: layoutType,
                 content: content
             ) { metadataList in
-                for metadata in metadataList {
+                for var metadata in metadataList {
+                    metadata = DocumentMetadata(
+                        documentID: metadata.documentID,
+                        fileURL: metadata.fileURL,
+                        documentType: metadata.documentType,
+                        layoutType: metadata.layoutType,
+                        lastModified: metadata.lastModified,
+                        embedding: metadata.embedding,
+                        content: metadata.content,
+                        keywords: keywords
+                    )
                     DocumentMetadataManager.shared.addMetadata(metadata)
                 }
 
@@ -53,6 +71,7 @@ struct DocumentSaver {
         }
     }
 }
+
 
 
 

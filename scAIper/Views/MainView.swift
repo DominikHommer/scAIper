@@ -20,7 +20,7 @@ struct MainView: View {
                     Label("Dokumente", systemImage: "folder.fill")
                 }
             
-            ExpenseOverviewView()
+            FinancialAnalysisView()
                 .tabItem {
                     Label("Ausgaben", systemImage: "chart.pie.fill")
                 }

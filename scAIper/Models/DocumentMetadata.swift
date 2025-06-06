@@ -15,6 +15,8 @@ struct DocumentMetadata: Codable, Identifiable {
     let lastModified: Date
     let embedding: Embedding
     let content: String
+    let keywords: [String: String]?
 }
+
 
 

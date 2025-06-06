@@ -9,4 +9,5 @@
 struct ScoredDocument {
     let metadata: DocumentMetadata
     let score: Double
+    
 }

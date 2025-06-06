@@ -29,7 +29,7 @@ final class ChunkingService {
         - Antworte in folgendem JSON-Format:
 
         {
-          "title": "ChunkedText",
+          "name": "ChunkedText",
           "type": "array",
           "items": {
             "type": "object",
@@ -68,16 +68,48 @@ final class ChunkingService {
         ] + fewShotExamples + [
             ["role": "user", "content": text]
         ]
+        // 1. Definiere zuerst nur den reinen Schema‐Teil (ohne „name“):
+        let chunkSchemaDef: [String: Any] = [
+            "type": "array",
+            "items": [
+                "type": "object",
+                "properties": [
+                    "chunk_index": [
+                        "type": "integer",
+                        "description": "Index der Reihenfolge"
+                    ],
+                    "text": [
+                        "type": "string",
+                        "description": "Abschnittstext mit 100–120 Wörtern"
+                    ]
+                ],
+                "required": ["chunk_index", "text"],
+                "additionalProperties": false
+            ],
+            "description": "Ein Array von Text-Chunks, each mit chunk_index und text."
+        ]
 
+        // 2. Packe diesen Teil unter „schema“ und gib zusätzlich den „name“ an:
+        let fullJsonSchema: [String: Any] = [
+            "name": "ChunkedText",
+            "schema": chunkSchemaDef
+        ]
+
+        // 3. Setze response_format entsprechend:
         let payload: [String: Any] = [
             "model": "meta-llama/llama-4-maverick-17b-128e-instruct",
             "temperature": 0.8,
             "top_p": 1,
             "stream": false,
             "max_completion_tokens": 8000,
-            "response_format": ["type": "json_object"],
+            "response_format": [
+                "type": "json_schema",
+                "json_schema": fullJsonSchema
+            ],
             "messages": messages
         ]
+
+
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
