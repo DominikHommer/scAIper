@@ -20,24 +20,35 @@ final class ChunkingService {
         let systemPrompt = """
         Du bist ein intelligenter Assistent, der einen langen Text in sinnvoll gegliederte, thematisch zusammenhängende Abschnitte („Chunks“) aufteilt.
 
-        Deine Ausgabe MUSS ausschließlich ein **gültiges JSON-Array von Objekten** sein – keine Einleitung, keine Erklärungen, kein Markdown, keine Kommentare.
+        Deine Ausgabe MUSS ausschließlich ein gültiges JSON-Array von Objekten sein – keine Einleitung, keine Erklärungen, kein Markdown, keine Kommentare.
 
         Regeln:
-        - Jeder Chunk enthält ein Feld `chunk_index` (beginnend bei 0) und ein Feld `text`.
+        - Jeder Chunk enthält ein Feld chunk_index (beginnend bei 0) und ein Feld text.
         - Der Text soll ca. 100–120 Wörter enthalten.
         - Jeder Chunk endet am Ende eines Satzes.
-        - Gib ausschließlich **eine gültige JSON-Antwort** zurück, z. B.:
+        - Antworte in folgendem JSON-Format:
 
-        [
-          {
-            "chunk_index": 0,
-            "text": "Erster sinnvoller Abschnitt ..."
+        {
+          "title": "ChunkedText",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "chunk_index": {
+                "type": "integer",
+                "description": "A zero-based index indicating the order of the chunk in the overall document."
+              },
+              "text": {
+                "type": "string",
+                "description": "A coherent paragraph or text section, ideally thematically grouped, ending at a sentence boundary and containing approximately 100–120 words."
+              }
+            },
+            "required": ["chunk_index", "text"],
+            "additionalProperties": false
           },
-          {
-            "chunk_index": 1,
-            "text": "Nächster Abschnitt ..."
-          }
-        ]
+          "description": "An array of text chunks, each representing a meaningful section of the input text. Each chunk must include a chunk_index and the associated text content."
+        }
+
         """
 
         let fewShotExamples: [[String: Any]] = [
@@ -47,24 +58,10 @@ final class ChunkingService {
             ],
             [
                 "role": "assistant",
-                "content": """
-                [
-                  {
-                    "chunk_index": 0,
-                    "text": "Eva Musterfrau, geboren am 05.01.1982 in Hamburg."
-                  },
-                  {
-                    "chunk_index": 1,
-                    "text": "Seit 11/2016: Dritte Station GmbH."
-                  },
-                  {
-                    "chunk_index": 2,
-                    "text": "Ausbildung: 10/2007 - 10/2011 BWL-Studium Universität Musterstadt."
-                  }
-                ]
-                """
+                "content": "[{\"chunk_index\":0,\"text\":\"Eva Musterfrau, geboren am 05.01.1982 in Hamburg.\"},{\"chunk_index\":1,\"text\":\"Seit 11/2016: Dritte Station GmbH.\"},{\"chunk_index\":2,\"text\":\"Ausbildung: 10/2007 - 10/2011 BWL-Studium Universität Musterstadt.\"}]"
             ]
         ]
+
 
         let messages: [[String: Any]] = [
             ["role": "system", "content": systemPrompt]
@@ -73,11 +70,11 @@ final class ChunkingService {
         ]
 
         let payload: [String: Any] = [
-            "model": "llama-3.3-70b-specdec",
-            "temperature": 1,
+            "model": "meta-llama/llama-4-maverick-17b-128e-instruct",
+            "temperature": 0.8,
             "top_p": 1,
             "stream": false,
-            "max_completion_tokens": 5024,
+            "max_completion_tokens": 8000,
             "response_format": ["type": "json_object"],
             "messages": messages
         ]
@@ -110,8 +107,8 @@ final class ChunkingService {
             }
 
             if let httpResponse = response as? HTTPURLResponse {
-                print("🌐 HTTP-Status: \(httpResponse.statusCode)")
-                print("🧾 Headers: \(httpResponse.allHeaderFields)")
+                print("HTTP-Status: \(httpResponse.statusCode)")
+                print("Headers: \(httpResponse.allHeaderFields)")
             }
 
             guard let data = data else {
@@ -138,7 +135,7 @@ final class ChunkingService {
 
                 if let content = (topLevel?["choices"] as? [[String: Any]])?.first?["message"] as? [String: Any],
                    let contentString = content["content"] as? String {
-
+                    
                     if let range = contentString.range(of: #"(?s)\[\s*\{.*?\}\s*\]"#, options: .regularExpression) {
                         let jsonString = String(contentString[range])
                         if let jsonData = jsonString.data(using: .utf8) {
@@ -149,15 +146,14 @@ final class ChunkingService {
                     }
 
                     throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Konnte kein gültiges JSON-Array im Antworttext finden."])
-                } else {
+                }
+                else {
                     throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Ungültige JSON-Struktur beim Chunking von Groq-Antwort"])
                 }
             } catch {
-                print("❌ Fehler beim Parsen der JSON-Antwort:", error)
+                print("Fehler beim Parsen der JSON-Antwort:", error)
                 completion(.failure(error))
             }
         }.resume()
     }
-
-
 }

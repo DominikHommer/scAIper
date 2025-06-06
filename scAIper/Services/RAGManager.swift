@@ -67,7 +67,7 @@ final class RAGManager {
             return
         }
         
-        let apiURLString = "https://router.huggingface.co/hf-inference/pipeline/sentence-similarity/sentence-transformers/all-MiniLM-L6-v2"
+        let apiURLString = "https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/sentence-similarity"
         guard let url = URL(string: apiURLString) else {
             print("Ungültige URL für Similarity API")
             completion(nil)
@@ -179,7 +179,7 @@ final class RAGManager {
 
     
     func computeEmbeddings(for input: String, completion: @escaping ([Double]?) -> Void) {
-        let apiURLString = "https://router.huggingface.co/hf-inference/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2"
+        let apiURLString = "https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/feature-extraction"
         guard let url = URL(string: apiURLString) else {
             print("Ungültige URL für Embeddings API")
             completion(nil)
