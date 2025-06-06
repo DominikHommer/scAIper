@@ -115,12 +115,12 @@ class OCRManager: NSObject {
                 completion(nil, nil)
                 return
             }
-            
-            // Schritt 1: Extrahiere Text-Elemente (Wort und normierte Koordinaten)
+                        
             var elements: [(text: String, x: CGFloat, y: CGFloat)] = []
             for observation in observations {
                 guard let candidate = observation.topCandidates(1).first else { continue }
                 let text = candidate.string
+                print(text)
                 let tokenizer = NLTokenizer(unit: .word)
                 tokenizer.string = text
                 tokenizer.enumerateTokens(in: text.startIndex..<text.endIndex) { tokenRange, _ in
@@ -138,7 +138,7 @@ class OCRManager: NSObject {
             print("Elements:", elements)
             
             // Gruppierung der Elemente
-            let groups = GridClustering.groupElementsByRadius(elements: elements, radius: 0.02)
+            /*let groups = GridClustering.groupElementsByRadius(elements: elements, radius: 0.02)
             var mergedElements: [(text: String, x: CGFloat, y: CGFloat)] = []
             for group in groups {
                 let mergedText = group.map { $0.text }.joined(separator: " ")
@@ -192,17 +192,16 @@ class OCRManager: NSObject {
                     grid[rowIndex][colIndex] += " " + element.text
                 }
             }
-            print("Initial Grid:", grid)
+            print("Initial Grid:", grid)*/
             
-            // Weitere Nachbearbeitung der Tabelle via LLM-Service
-            OCRLLMService.sendLLMRequest(with: grid) { jsonResponse in
+            OCRLLMService.sendLLMRequest(with: elements) { jsonResponse in
                 guard
                     let jsonResponse = jsonResponse,
                     let structuredTable = jsonResponse["table"] as? [[String: Any]],
                     let header = jsonResponse["header"] as? [String]
                 else {
-                    print("Ungültige oder leere LLM-Antwort. Verwende das initiale Grid.")
-                    CSVGenerator.createCSV(from: grid, completion: completion)
+                    print("Ungültige oder leere LLM-Antwort.")
+                    CSVGenerator.createCSV(from: [["Keine Daten erkannt"]], completion: completion)
                     return
                 }
                 
@@ -216,10 +215,11 @@ class OCRManager: NSObject {
                     }
                     newGrid.append(rowArray)
                 }
-                print("Neues strukturiertes Grid:", newGrid)
+                print("Neues strukturiertes Grid (direkt vom LLM):", newGrid)
                 
                 CSVGenerator.createCSV(from: newGrid, completion: completion)
             }
+
         }
         
         request.recognitionLevel = .accurate

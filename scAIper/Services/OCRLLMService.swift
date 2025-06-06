@@ -10,23 +10,17 @@ import Foundation
 import UIKit
 
 struct OCRLLMService {
-    static func sendLLMRequest(with grid: [[String]], completion: @escaping ([String: Any]?) -> Void) {
+    static func sendLLMRequest(with grid: [(text: String, x: CGFloat, y: CGFloat)], completion: @escaping ([String: Any]?) -> Void) {
         let systemPrompt = """
-        You are a helpful data assistant. Your task is to process extremely unstructured tables and return them as clean, structured JSON.
+        You are given a list of extracted text elements from a scanned table. Each element contains a `text` value along with its approximate `x` and `y` coordinates (normalized between 0 and 1). Your task is to reconstruct the original tabular structure.
 
-        The input will be a table represented as a list of rows (nested lists). These rows may contain:
-        - partial or fully shifted data,
-        - missing entries,
-        - multiple header rows that must be merged into one consistent header,
-        - and irrelevant or noisy filler data.
+        Use the `y` coordinate to group elements into rows — values with similar `y` positions belong to the same row. Use the `x` coordinate to assign each element to its appropriate column based on horizontal alignment. In addition, apply your domain knowledge and common sense to interpret and organize the table logically.
 
-        Your responsibilities:
-        1. **Detect and merge** the correct header row. The header may be split across several rows (e.g. ["Hire", "Date"] and ["Years", "of", "Service"]). Combine these into clear column names such as "Hire Date", "Years of Service", etc.
-        2. **Ignore filler rows** that contain only one or two words (e.g. "Status", "Store", "Job", "T", or "S") or are obviously incomplete.
-        3. Create structured rows where each dictionary key matches the final header structure.
-        4. Fill missing values with `null`.
-        5. Remove any trailing noise or values that do not align with the structure.
-        6. Provide your answer in **valid JSON**, following this schema:
+        Some values may be split across multiple elements (e.g., "L" and "001" should be combined into "L001"). Use contextual understanding and spatial proximity to merge such fragments when appropriate.
+
+        The first row typically contains column headers. All subsequent rows represent data entries. Do not translate or reinterpret any values — keep the original text. Your only task is to reconstruct structure.
+
+        Your output should be a structured representation of the table using the following JSON format:
 
         {
           "title": "GenericTable",
@@ -52,39 +46,67 @@ struct OCRLLMService {
           },
           "required": ["header", "table"]
         }
+
         """
         let systemMessage: [String: String] = [
             "role": "system",
             "content": systemPrompt
         ]
         
+        let gridJSONArray: [[String: Any]] = grid.map { ["text": $0.text, "x": $0.x, "y": $0.y] }
+
         let gridJSONString: String = {
             do {
-                let jsonData = try JSONSerialization.data(withJSONObject: grid, options: [.prettyPrinted])
+                let jsonData = try JSONSerialization.data(withJSONObject: gridJSONArray, options: [.prettyPrinted])
                 return String(data: jsonData, encoding: .utf8) ?? ""
             } catch {
                 print("Fehler beim Serialisieren des Grids: \(error)")
-                return "\(grid)"
+                return ""
             }
         }()
+
         let fewShotMessages: [[String: String]] = [
             [
                 "role": "user",
-                "content": "Here is the unstructured table grid:\n[[\"Name\", \"Age\", \"City\"], [\"Alice\", \"30\", \"Berlin\"], [\"Bob\", \"28\", \"Munich\"]]"
+                "content": """
+                Here is the unstructured table grid:
+                [(text: "ID", x: 0.1, y: 0.01), (text: "Item", x: 0.3, y: 0.01), (text: "Qty", x: 0.5, y: 0.01),
+                 (text: "A", x: 0.1, y: 0.1), (text: "1", x: 0.13, y: 0.1), (text: "Widget", x: 0.3, y: 0.1), (text: "10", x: 0.5, y: 0.1)]
+                """
             ],
             [
                 "role": "assistant",
-                "content": "{\n  \"header\": [\"Name\", \"Age\", \"City\"],\n  \"table\": [\n    {\"Name\": \"Alice\", \"Age\": \"30\", \"City\": \"Berlin\"},\n    {\"Name\": \"Bob\", \"Age\": \"28\", \"City\": \"Munich\"}\n  ]\n}"
+                "content": """
+                {
+                  "header": ["ID", "Item", "Qty"],
+                  "table": [
+                    {"ID": "A1", "Item": "Widget", "Qty": 10}
+                  ]
+                }
+                """
             ],
             [
                 "role": "user",
-                "content": "Here is the unstructured table grid:\n[[\"First\", \"Last\"], [\"Name\", \"Name\"], [\"Alice\", \"Smith\"], [\"Bob\", \"\"]]"
+                "content": """
+                Here is the unstructured table grid:
+                [(text: "Code", x: 0.1, y: 0.02), (text: "Name", x: 0.3, y: 0.02),
+                 (text: "B", x: 0.1, y: 0.12), (text: "204", x: 0.15, y: 0.12), (text: "Bolt", x: 0.3, y: 0.12)]
+                """
             ],
             [
                 "role": "assistant",
-                "content": "{\n  \"header\": [\"First Name\", \"Last Name\"],\n  \"table\": [\n    {\"First Name\": \"Alice\", \"Last Name\": \"Smith\"},\n    {\"First Name\": \"Bob\", \"Last Name\": null}\n  ]\n}"
+                "content": """
+                {
+                  "header": ["Code", "Name"],
+                  "table": [
+                    {"Code": "B204", "Name": "Bolt"}
+                  ]
+                }
+                """
             ]
         ]
+
+
         
         let userMessage: [String: String] = [
             "role": "user",
@@ -94,9 +116,10 @@ struct OCRLLMService {
         let payload: [String: Any] = [
             "messages": [systemMessage] + fewShotMessages + [userMessage],
             "model": OCRManager.modelNameDocCheck,
-            "temperature": 1.0,
-            "max_completion_tokens": 8000,
+            "temperature": 0.8,
+            "max_completion_tokens": 8192,
             "top_p": 1.0,
+            "seed": 42,
             "response_format": ["type": "json_object"],
             "stream": false,
             "stop": "None"
@@ -170,3 +193,5 @@ struct OCRLLMService {
         task.resume()
     }
 }
+
+
