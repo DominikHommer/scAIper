@@ -11,7 +11,7 @@ import NaturalLanguage
 
 class OCRManager: NSObject {
     static let shared = OCRManager()
-    static var modelNameDocCheck: String = "llama-3.3-70b-versatile"
+    static var modelNameDocCheck: String = "meta-llama/llama-4-maverick-17b-128e-instruct"
 
     // Diese Methode generiert ein PDF aus einem UIImage mithilfe von OCR.
     static func generatePDFWithOCR(from image: UIImage, completion: @escaping (Data?, String?) -> Void) {

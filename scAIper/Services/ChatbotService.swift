@@ -15,8 +15,8 @@ class ChatbotService {
     }
 
     private let apiUrlString = "https://api.groq.com/openai/v1/chat/completions"
-    private let modelNameCompletion = "llama-3.3-70b-specdec"
-    private let modelNameDocCheck = "llama-3.3-70b-specdec"
+    private let modelNameCompletion = "meta-llama/llama-4-maverick-17b-128e-instruct"
+    private let modelNameDocCheck = "meta-llama/llama-4-maverick-17b-128e-instruct"
     private let systemMessageContent = """
     Du bist ein freundlicher, intelligenter und hilfsbereiter Assistent namens scAIper, der Nutzern dabei hilft, Informationen aus gescannten Dokumenten zu extrahieren und verständlich aufzubereiten. Deine Hauptaufgaben umfassen:
      - Fragen zu Inhalten aus eingescannten Tabellen, Rechnungen, Verträgen, Lohnabrechnungen und anderen Dokumententypen klar und präzise zu beantworten.
