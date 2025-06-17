@@ -11,7 +11,7 @@ import NaturalLanguage
 
 class OCRManager: NSObject {
     static let shared = OCRManager()
-    static func generatePDFWithPositionedOCRv2(
+    static func generatePDFWithPositionedOCR(
         from image: UIImage,
         completion: @escaping (Data?, String?) -> Void
     ) {
@@ -20,13 +20,18 @@ class OCRManager: NSObject {
             return
         }
 
-        let a4 = CGSize(width: 595, height: 842)
+        let a4Portrait = CGSize(width: 595, height: 842)
+        let a4Landscape = CGSize(width: 842, height: 595)
+
+        let imageAspectRatio = image.size.width / image.size.height
+        let a4 = imageAspectRatio > 1 ? a4Landscape : a4Portrait
         let pageRect = CGRect(origin: .zero, size: a4)
-        let lineHeight: CGFloat = a4.height / 28  // ca. 28 Zeilen auf A4
+        let lineHeight: CGFloat = a4.height / 28
 
         let request = VNRecognizeTextRequest { request, _ in
             guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                completion(nil, nil); return
+                completion(nil, nil)
+                return
             }
 
             var entries: [(String, CGRect)] = []
@@ -34,18 +39,26 @@ class OCRManager: NSObject {
                 guard let candidate = obs.topCandidates(1).first else { continue }
                 let fullRange = candidate.string.startIndex..<candidate.string.endIndex
                 if let wordBox = try? candidate.boundingBox(for: fullRange) {
-                    entries.append((candidate.string.trimmingCharacters(in: .whitespacesAndNewlines), wordBox.boundingBox))
+                    entries.append((
+                        candidate.string.trimmingCharacters(in: .whitespacesAndNewlines),
+                        wordBox.boundingBox
+                    ))
                 } else {
-                    entries.append((candidate.string.trimmingCharacters(in: .whitespacesAndNewlines), obs.boundingBox))
+                    entries.append((
+                        candidate.string.trimmingCharacters(in: .whitespacesAndNewlines),
+                        obs.boundingBox
+                    ))
                 }
             }
 
             guard !entries.isEmpty else {
-                completion(nil, nil); return
+                completion(nil, nil)
+                return
             }
 
             let data = UIGraphicsPDFRenderer(bounds: pageRect, format: UIGraphicsPDFRendererFormat()).pdfData { ctx in
                 ctx.beginPage()
+
                 for (text, bbox) in entries {
                     guard !text.isEmpty else { continue }
 
@@ -54,9 +67,7 @@ class OCRManager: NSObject {
                     let w = bbox.width * a4.width
                     let h = bbox.height * a4.height
 
-                    // Dynamisch, aber max. 80 % von lineHeight
                     let fontSize = min(h * 0.8, lineHeight * 0.8)
-
                     let attrs: [NSAttributedString.Key: Any] = [
                         .font: UIFont.systemFont(ofSize: fontSize),
                         .foregroundColor: UIColor.black
@@ -82,89 +93,6 @@ class OCRManager: NSObject {
             }
         }
     }
-
-
-    static func generatePDFWithPositionedOCR(
-        from image: UIImage,
-        completion: @escaping (Data?, String?) -> Void
-    ) {
-        guard let cgImage = image.cgImage else {
-            completion(nil, nil)
-            return
-        }
-
-        let a4Size = CGSize(width: 595, height: 842) // DIN A4 in Punkten
-        let pageRect = CGRect(origin: .zero, size: a4Size)
-
-        let request = VNRecognizeTextRequest { request, error in
-            if let error = error {
-                print("Texterkennungsfehler: \(error)")
-                completion(nil, nil)
-                return
-            }
-
-            guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                completion(nil, nil)
-                return
-            }
-
-            let wordsWithPositions: [(String, CGRect)] = observations.compactMap { observation in
-                guard let topCandidate = observation.topCandidates(1).first else {
-                    return nil
-                }
-                return (topCandidate.string, observation.boundingBox)
-            }
-
-            guard !wordsWithPositions.isEmpty else {
-                print("Kein Text erkannt.")
-                completion(nil, nil)
-                return
-            }
-
-            let format = UIGraphicsPDFRendererFormat()
-            let renderer = UIGraphicsPDFRenderer(bounds: pageRect, format: format)
-
-            let data = renderer.pdfData { ctx in
-                ctx.beginPage()
-
-                for (word, bbox) in wordsWithPositions {
-                    // BoundingBox ist normalisiert: (0,0) = unten links, (1,1) = oben rechts
-                    // PDF-Koordinaten starten aber bei unten links, also brauchen wir Y-Spiegelung:
-                    let x = bbox.origin.x * a4Size.width
-                    let y = (1 - bbox.origin.y - bbox.size.height) * a4Size.height
-                    let width = bbox.size.width * a4Size.width
-                    let height = bbox.size.height * a4Size.height
-
-                    let fontSize = min(height * 0.8, 20) // etwas kleiner als Zellenhöhe
-                    let attributes: [NSAttributedString.Key: Any] = [
-                        .font: UIFont.systemFont(ofSize: fontSize),
-                        .foregroundColor: UIColor.black
-                    ]
-
-                    let wordRect = CGRect(x: x, y: y, width: width, height: height)
-                    word.draw(in: wordRect, withAttributes: attributes)
-                }
-            }
-
-            // Für spätere Anzeige den Text extrahieren
-            let allText = wordsWithPositions.map(\.0).joined(separator: " ")
-            completion(data, allText)
-        }
-
-        request.recognitionLevel = .accurate
-        request.usesLanguageCorrection = true
-
-        Task.detached(priority: .background) {
-            let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-            do {
-                try handler.perform([request])
-            } catch {
-                print("Fehler beim Ausführen der OCR: \(error)")
-                completion(nil, nil)
-            }
-        }
-    }
-
 
     static func generatePDFWithOCR(
         from image: UIImage,

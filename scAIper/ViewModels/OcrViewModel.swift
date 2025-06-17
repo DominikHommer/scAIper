@@ -84,7 +84,7 @@ class OcrViewModel: ObservableObject {
             for: image,
             layout: layout,
             fileName: "ocr_output.pdf",
-            generator: OCRManager.generatePDFWithPositionedOCRv2,
+            generator: OCRManager.generatePDFWithPositionedOCR,
             completion: completion
         )
     }
