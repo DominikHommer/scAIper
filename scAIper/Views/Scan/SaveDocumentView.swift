@@ -3,17 +3,18 @@
 //  scAIper
 //
 //  Created by Dominik Hommer on 20.03.25.
+//
 
 import SwiftUI
 
 struct SaveDocumentView: View {
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
     @State private var fileName: String = ""
     
     let documentType: DocumentType
     let layoutType: LayoutType
     let sourceURL: URL
-    let documentContent : String
+    let documentContent: String
     
     var body: some View {
         NavigationStack {
@@ -26,30 +27,44 @@ struct SaveDocumentView: View {
                             .foregroundColor(.gray)
                     }
                 }
+                
                 Button("Dokument speichern") {
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
-                    let timestampString = dateFormatter.string(from: Date())
-
-                    guard !fileName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-                    let fullFileName = "\(fileName)_\(documentType.id)_\(layoutType.id)_\(timestampString)\(layoutType.fileSuffix)"
-
-                    if documentType == .rechnung || documentType == .lohnzettel {
-                        KeywordLLMExtractor.extractKeywords(documentType: documentType, text: documentContent) { extractedDict in
-                            DocumentSaver.saveDocument(
-                                sourceURL: sourceURL,
-                                fileName: fullFileName,
-                                documentType: documentType,
-                                layoutType: layoutType,
-                                content: documentContent,
-                                keywords: extractedDict
-                            )
-                            dismiss()
-                            }
-                        }
-                        else {
+                    saveDocument()
+                }
+            }
+            .navigationTitle("Dokument speichern")
+        }
+    }
+    
+    private func saveDocument() {
+        // 1) Dateinamen bauen
+        let trimmed = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        
+        let timestamp = DateFormatter("yyyyMMdd_HHmmss").string(from: Date())
+        let fullFileName = "\(trimmed)_\(documentType.id)_\(layoutType.id)_\(timestamp)\(layoutType.fileSuffix)"
+        
+        if documentType == .rechnung || documentType == .lohnzettel {
+            let extractor = KeywordLLMExtractor()
+            extractor.extractKeywords(documentType: documentType, text: documentContent) { result in
+                switch result {
+                case .success(let keywords):
+                    DispatchQueue.main.async {
                         DocumentSaver.saveDocument(
-                            sourceURL: sourceURL,
+                            sourceURL: self.sourceURL,
+                            fileName: fullFileName,
+                            documentType: documentType,
+                            layoutType: layoutType,
+                            content: documentContent,
+                            keywords: keywords
+                        )
+                        dismiss()
+                    }
+                case .failure(let error):
+                    print("Keyword-Extraktion fehlgeschlagen:", error)
+                    DispatchQueue.main.async {
+                        DocumentSaver.saveDocument(
+                            sourceURL: self.sourceURL,
                             fileName: fullFileName,
                             documentType: documentType,
                             layoutType: layoutType,
@@ -59,13 +74,28 @@ struct SaveDocumentView: View {
                         dismiss()
                     }
                 }
-
-
             }
-            .navigationTitle("Dokument speichern")
+        } else {
+            DocumentSaver.saveDocument(
+                sourceURL: sourceURL,
+                fileName: fullFileName,
+                documentType: documentType,
+                layoutType: layoutType,
+                content: documentContent,
+                keywords: nil
+            )
+            dismiss()
         }
     }
 }
+
+private extension DateFormatter {
+    convenience init(_ format: String) {
+        self.init()
+        dateFormat = format
+    }
+}
+
 
 
 

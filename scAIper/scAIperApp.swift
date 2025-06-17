@@ -12,7 +12,7 @@ import SwiftUI
 struct scAIperApp: App {
     init() {
         DocumentMetadataManager.shared.validateMetadata()
-        DocumentMetadataManager.shared.printDocumentMetadataJSON()
+        //DocumentMetadataManager.shared.printDocumentMetadataJSON()
         }
     var body: some Scene {
         WindowGroup {
