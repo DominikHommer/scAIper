@@ -10,16 +10,23 @@ import Foundation
 struct ChunkingModels {
 
     static let ChunkingInstruction = """
-        Du bist ein intelligenter Assistent, der einen langen Text in sinnvoll gegliederte, thematisch zusammenhängende Abschnitte („Chunks“) aufteilt.
+        Du bist ein intelligenter Assistent, der einen unstrukturierten oder semistrukturierten Text (z. B. eine Rechnung, ein Vertrag oder ein gescannter Brief) in sinnvolle Abschnitte („Chunks“) unterteilt. Diese Chunks sollen thematisch zusammenhängend und für eine spätere Analyse sinnvoll abgegrenzt sein.
 
-        Deine Ausgabe MUSS ausschließlich ein gültiges JSON-Array von Objekten sein – keine Einleitung, keine Erklärungen, kein Markdown, keine Kommentare.
+        Deine Ausgabe MUSS ein **valides JSON-Array** von Objekten mit exakt den folgenden Feldern sein – **ohne** Kommentare, Einleitung oder sonstige Ausgaben.
 
-        Regeln:
-        - Jeder Chunk enthält ein Feld chunk_index (beginnend bei 0) und ein Feld text.
-        - Der Text soll ca. 100–120 Wörter enthalten.
-        - Jeder Chunk endet am Ende eines Satzes.
+        ### Chunk-Regeln:
+        - Jeder Chunk hat:
+          - `chunk_index` (beginnend bei 0)
+          - `text` (mehrzeiliger Klartext, zusammengehörig)
+        - Chunks sollen **nicht nur satzweise**, sondern **nach Sinnabschnitten** aufgeteilt werden. Beispiele:
+          - Adressblock
+          - Rechnungsnummer + Datum
+          - Tabellenkopf + Einträge
+          - Summenblock
+          - Zahlungsinformationen
+        - Leere Zeilen oder Formatierung können als Hinweis auf Chunk-Grenzen dienen.
+        - Achte darauf, dass jeder Chunk **für sich verständlich** ist.
         - Antworte in folgendem JSON-Format:
-
         {
           "name": "ChunkedText",
           "type": "array",
@@ -32,7 +39,7 @@ struct ChunkingModels {
               },
               "text": {
                 "type": "string",
-                "description": "A coherent paragraph or text section, ideally thematically grouped, ending at a sentence boundary and containing approximately 100–120 words."
+                "description": "A coherent paragraph or text section, ideally thematically grouped, ending at a sentence boundary."
               }
             },
             "required": ["chunk_index", "text"],
@@ -45,15 +52,31 @@ struct ChunkingModels {
     /// Beispiel-Prompts als typisiertes Array
     static let ChunkingFewShot: [ChatMessageLLM] = [
         ChatMessageLLM(role: .user, content: """
-            Zerlege diesen Lebenslauf in Abschnitte: Eva Musterfrau, geboren am 05.01.1982 in Hamburg. \
-            Seit 11/2016: Dritte Station GmbH. Ausbildung: 10/2007 - 10/2011 BWL-Studium Universität Musterstadt.
-            """),
+        Zerlege diesen Rechnungstext in sinnvolle Abschnitte:
+        RECHNUNG
+        RECHNUNG AN: VINCENT VOGELSTETTER JEDE STRASSE 123 12345 JEDE STADT
+        RECHNUNG NR. 12345 28. APRIL 2030 FOTOGRAFIE - SARAH MARCHSREITER
+        Beschreibung Anzahl Preis Summe
+        Eventfotografie (4-stündiges Event) 4 125€ 500€
+        Porträtfotoshooting 1 185€ 185€
+        Bildbearbeitung (35 Bilder) 35 5€ 175€
+        Zwischensumme 860€
+        Steuer (0 %) 0 €
+        Summe 860€
+        ZAHLUNGSINFORMATIONEN:
+        EMPFÄNGER: SARAH MARCHSREITER
+        KONTONUMMER: 0123 4567 8901
+        """),
         ChatMessageLLM(role: .assistant, content: """
-            [{\"chunk_index\":0,\"text\":\"Eva Musterfrau, geboren am 05.01.1982 in Hamburg.\"},\
-            {\"chunk_index\":1,\"text\":\"Seit 11/2016: Dritte Station GmbH.\"},\
-            {\"chunk_index\":2,\"text\":\"Ausbildung: 10/2007 - 10/2011 BWL-Studium Universität Musterstadt.\"}]
-            """)
-    ]
+        [{\"chunk_index\": 0, \"text\": \"RECHNUNG\"},
+         {\"chunk_index\": 1, \"text\": \"RECHNUNG AN: VINCENT VOGELSTETTER JEDE STRASSE 123 12345 JEDE STADT\"},
+         {\"chunk_index\": 2, \"text\": \"RECHNUNG NR. 12345 28. APRIL 2030 FOTOGRAFIE - SARAH MARCHSREITER\"},
+         {\"chunk_index\": 3, \"text\": \"Beschreibung Anzahl Preis Summe\\nEventfotografie (4-stündiges Event) 4 125€ 500€\\nPorträtfotoshooting 1 185€ 185€\\nBildbearbeitung (35 Bilder) 35 5€ 175€\"},
+         {\"chunk_index\": 4, \"text\": \"Zwischensumme 860€\\nSteuer (0 %) 0 €\\nSumme 860€\"},
+         {\"chunk_index\": 5, \"text\": \"ZAHLUNGSINFORMATIONEN:\\nEMPFÄNGER: SARAH MARCHSREITER\\nKONTONUMMER: 0123 4567 8901\"}]
+        """)
+        ]
+
 
     struct SchemaDefinition: Encodable {
         let type: String
@@ -87,17 +110,17 @@ struct ChunkingModels {
                 properties: [
                     "chunk_index": .init(
                         type: "integer",
-                        description: "Index der Reihenfolge"
+                        description: "A zero-based index indicating the order of the chunk in the overall document."
                     ),
                     "text": .init(
                         type: "string",
-                        description: "Abschnittstext mit 100–120 Wörtern"
+                        description: "A coherent paragraph or text section, ideally thematically grouped, ending at a sentence boundary."
                     )
                 ],
                 required: ["chunk_index", "text"],
                 additionalProperties: false
             ),
-            description: "Ein Array von Text-Chunks, each mit chunk_index und text."
+            description: "An array of text chunks, each representing a meaningful section of the input text. Each chunk must include a chunk_index and the associated text content."
         )
     )
     struct ChunkingResponse: Decodable {

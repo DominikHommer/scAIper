@@ -84,7 +84,7 @@ struct ChatbotModels {
             .init(role: .system, content: systemContent)
         ]
         if let rag = ragOutput {
-            msgs.append(.init(role: .user, content: "\(userInput)\n\nHier die relevanten Dokumentabschnitte:\n\(rag)"))
+            msgs.append(.init(role: .user, content: "\(userInput)\n\nHier die relevanten Dokumentabschnitte, beachte das Dokumente enthalten sein können die nichts mit der Fragestellung zu tun haben, ignoriere diese:\n\(rag)"))
         } else {
             msgs.append(.init(role: .user, content: userInput))
         }

@@ -131,7 +131,7 @@ final class RAGManager {
         for input: String,
         completion: @escaping (String) -> Void
     ) {
-        topMatchingDocuments(for: input, topK: 4) { docs in
+        topMatchingDocuments(for: input, topK: 10) { docs in
             let context = docs.enumerated().map { idx, sd in
                 let score = String(format: "%.4f", sd.score)
                 return """
@@ -163,7 +163,6 @@ final class RAGManager {
             completion: completion
         )
     }
-
 }
 
 

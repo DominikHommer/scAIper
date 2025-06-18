@@ -12,6 +12,7 @@ final class ChatbotService {
 
     private let client: LLMClientType
     private let endpoint: URL
+    private let historyQueue = DispatchQueue(label: "chatbot.history.queue")
 
     private init(
         client: LLMClientType = LLMClient(
@@ -23,12 +24,43 @@ final class ChatbotService {
         self.endpoint = endpoint
     }
 
+    private var messageHistory: [ChatMessageLLM] = []
+    private let maxHistoryCount = 12
+
+    private func appendUserMessage(_ text: String) {
+        let msg = ChatMessageLLM(role: .user, content: text)
+        historyQueue.async {
+            self.messageHistory.append(msg)
+            self.trimHistoryIfNeeded()
+        }
+    }
+
+    private func appendAssistantMessage(_ text: String) {
+        let msg = ChatMessageLLM(role: .assistant, content: text)
+        historyQueue.async {
+            self.messageHistory.append(msg)
+            self.trimHistoryIfNeeded()
+        }
+    }
+
+    private func trimHistoryIfNeeded() {
+        let excess = messageHistory.count - maxHistoryCount
+        if excess > 0 {
+            messageHistory.removeFirst(excess)
+        }
+    }
+
+    func resetHistory() {
+        historyQueue.async {
+            self.messageHistory.removeAll()
+        }
+    }
+
     func queryDocumentCheck(
         input: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         let messages = ChatbotModels.docCheckMessages(userInput: input)
-
         let wrapper = ChatbotModels.DocCheckSchema(
             schema: .init(
                 properties: ["wantsDocumentInfo": .init()],
@@ -36,7 +68,6 @@ final class ChatbotService {
             )
         )
         let responseFormat = JSONSchemaResponseFormat(json_schema: wrapper)
-
         let payload = ChatRequest(
             model: AppConfig.Chat.docCheckModel,
             temperature: 0.0,
@@ -63,23 +94,63 @@ final class ChatbotService {
     ) {
         queryDocumentCheck(input: input) { [weak self] docCheck in
             guard let self = self else { return }
+
             switch docCheck {
             case .failure(let err):
                 completion(.failure(err))
 
             case .success(true):
+                // RAG-Pfad
                 RAGManager.shared.processRAG(for: input) { ragOutput in
-                    let messages = ChatbotModels.chatMessages(userInput: input, ragOutput: ragOutput)
-                    self.sendChat(messages: messages, completion: completion)
+                    // System-Prompt extrahieren
+                    let base = ChatbotModels.chatMessages(userInput: input, ragOutput: ragOutput)
+                    guard let systemMessage = base.first(where: { $0.role == .system }) else {
+                        completion(.failure(NSError(domain: "ChatbotService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Fehler beim Erzeugen des System-Prompts"])))
+                        return
+                    }
+                    // User-Nachricht mit RAG-Output
+                    let ragUser = ChatMessageLLM(role: .user, content: "\(input)\n\nHier die relevanten Dokumentabschnitte, beachte das Dokumente enthalten sein können die nichts mit der Fragestellung zu tun haben, ignoriere diese:\n\(ragOutput)")
+
+                    // Nachrichten zusammenstellen: System, History, RAG-User
+                    self.historyQueue.async {
+                        let history = self.messageHistory
+                        let final = [systemMessage] + history + [ragUser]
+
+                        self.sendChat(messages: final) { result in
+                            if case .success(let response) = result {
+                                self.appendUserMessage(input)
+                                self.appendAssistantMessage(response)
+                            }
+                            completion(result)
+                        }
+                    }
                 }
 
             case .success(false):
-                let messages = ChatbotModels.chatMessages(userInput: input)
-                self.sendChat(messages: messages, completion: completion)
+                // Standard-Pfad
+                let base = ChatbotModels.chatMessages(userInput: input)
+                guard let systemMessage = base.first(where: { $0.role == .system }) else {
+                    completion(.failure(NSError(domain: "ChatbotService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Fehler beim Erzeugen des System-Prompts"])))
+                    return
+                }
+                let userMsg = ChatMessageLLM(role: .user, content: input)
+
+                self.historyQueue.async {
+                    let history = self.messageHistory
+                    let final = [systemMessage] + history + [userMsg]
+
+                    self.sendChat(messages: final) { result in
+                        if case .success(let response) = result {
+                            self.appendUserMessage(input)
+                            self.appendAssistantMessage(response)
+                        }
+                        completion(result)
+                    }
+                }
             }
         }
     }
-
+    
     private func sendChat(
         messages: [ChatMessageLLM],
         completion: @escaping (Result<String, Error>) -> Void
@@ -91,7 +162,6 @@ final class ChatbotService {
             )
         )
         let responseFormat = JSONSchemaResponseFormat(json_schema: wrapper)
-
         let payload = ChatRequest(
             model: AppConfig.Chat.completionModel,
             temperature: 1.0,

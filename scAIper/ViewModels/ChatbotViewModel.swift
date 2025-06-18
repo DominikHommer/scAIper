@@ -48,7 +48,7 @@ class ChatbotViewModel: ObservableObject {
     }
 
     func resetHistory() {
-        // Nur lokalen Verlauf löschen
+        service.resetHistory()
         chatMessages = [
             ChatMessage(text: "Hallo! Ich bin der Chatbot. Wie kann ich dir helfen?", isUser: false)
         ]
