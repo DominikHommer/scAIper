@@ -26,9 +26,10 @@ final class ChunkingService {
         _ text: String,
         completion: @escaping (Result<[Chunk], Error>) -> Void
     ) {
-        let system   = ChatMessageLLM(role: .system, content: ChunkingModels.ChunkingInstruction)
+        let system   = ChatMessageLLM(role: .system, text: ChunkingModels.ChunkingInstruction)
         let fewShots = ChunkingModels.ChunkingFewShot
-        let user     = ChatMessageLLM(role: .user, content: text)
+        let user     = ChatMessageLLM(role: .user, text: text)
+
 
         // 4) Hier den ganzen Wrapper nutzen
         let schemaFormat = JSONSchemaResponseFormat(json_schema: ChunkingModels.ChunkingSchema)
@@ -52,6 +53,7 @@ final class ChunkingService {
             }
         }
     }
+
 }
 
 

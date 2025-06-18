@@ -35,13 +35,12 @@ struct KeywordModels {
         \(jsonSchema)
         """
     }
-
     // MARK: – Few-Shot-Beispiele
     static func fewShots(for docType: DocumentType) -> [ChatMessageLLM] {
         switch docType {
         case .rechnung:
             return [
-                .init(role: .user, content: """
+                ChatMessageLLM(role: .user, text: """
                     OCR-Text:
                     \"\"\"
                     Rechnung Nr. 123456 vom 01.01.2024
@@ -50,7 +49,7 @@ struct KeywordModels {
                     USt-ID: DE999999999
                     \"\"\"
                     """),
-                .init(role: .assistant, content: """
+                ChatMessageLLM(role: .assistant, text: """
                     {
                       "Rechnungsnummer": "123456",
                       "Rechnungsdatum": "01.01.2024",
@@ -62,7 +61,7 @@ struct KeywordModels {
             ]
         case .lohnzettel:
             return [
-                .init(role: .user, content: """
+                ChatMessageLLM(role: .user, text: """
                     OCR-Text:
                     \"\"\"
                     Bruttolohn: 4000€
@@ -72,7 +71,7 @@ struct KeywordModels {
                     Zeitraum: Januar 2024
                     \"\"\"
                     """),
-                .init(role: .assistant, content: """
+                ChatMessageLLM(role: .assistant, text: """
                     {
                       "Bruttolohn": "4000€",
                       "Nettolohn": "2600€",
@@ -84,9 +83,10 @@ struct KeywordModels {
             ]
         default:
             return []
-            
         }
     }
+
+
 
 
     struct PropertyDef: Encodable {

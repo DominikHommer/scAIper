@@ -86,7 +86,7 @@ struct DocumentGridView: View {
             .navigationDestination(for: DocumentType.self) { doc in
                 ScannerView(selectedDocument: doc)
             }
-            .navigationTitle("Dokumente")
+            .navigationTitle("Scannen")
         }
     }
 }

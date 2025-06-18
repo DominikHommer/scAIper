@@ -8,6 +8,14 @@
 import Foundation
 
 struct StructureLLMModels{
+    private static let baseInstructionVision = """
+    You are given an image of a table. Extract the table content as JSON matching the schema below. Do NOT return the schema itself, but the actual data matching the schema. Output must be valid JSON strictly matching the schema.
+
+    - Do not include null values, instead use empty strings ("") for missing data.
+    - Avoid special Unicode characters like µ, ä, ö, ü; use plain ASCII characters.
+    - Output must be valid JSON strictly matching the schema.
+    """
+
     
     private static let baseInstruction = """
     You are given a list of extracted text elements from a scanned table. Each element contains a `text` value along with its approximate `x` and `y` coordinates (normalized between 0 and 1). Your task is to reconstruct the original tabular structure.
@@ -38,35 +46,54 @@ struct StructureLLMModels{
         \(schemaJSON)
         """
     }
+    static var LLMInstructionVision: String {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        let schemaJSON: String
+        do {
+            let data = try encoder.encode(StructureLLMSchema)
+            schemaJSON = String(decoding: data, as: UTF8.self)
+        } catch {
+            return baseInstructionVision + "\n\n<ERROR SERIALIZING SCHEMA>\n"
+        }
+
+        return """
+        \(baseInstruction)
+
+        \(schemaJSON)
+        """
+    }
 
     static let LLMFewShot: [ChatMessageLLM] = [
-        .init(role: .user, content: """
+        ChatMessageLLM(role: .user, text: """
             Here is the unstructured table grid:
             [(text: "ID", x: 0.1, y: 0.01), (text: "Item", x: 0.3, y: 0.01), (text: "Qty", x: 0.5, y: 0.01),
              (text: "A", x: 0.1, y: 0.1), (text: "1", x: 0.13, y: 0.1), (text: "Widget", x: 0.3, y: 0.1), (text: "10", x: 0.5, y: 0.1)]
-            """),
-        .init(role: .assistant, content: """
+        """),
+        ChatMessageLLM(role: .assistant, text: """
             {
               "header": ["ID", "Item", "Qty"],
               "table": [
                 {"ID": "A1", "Item": "Widget", "Qty": 10}
               ]
             }
-            """),
-        .init(role: .user, content: """
+        """),
+        ChatMessageLLM(role: .user, text: """
             Here is the unstructured table grid:
             [(text: "Code", x: 0.1, y: 0.02), (text: "Name", x: 0.3, y: 0.02),
              (text: "B", x: 0.1, y: 0.12), (text: "204", x: 0.15, y: 0.12), (text: "Bolt", x: 0.3, y: 0.12)]
-            """),
-        .init(role: .assistant, content: """
+        """),
+        ChatMessageLLM(role: .assistant, text: """
             {
               "header": ["Code", "Name"],
               "table": [
                 {"Code": "B204", "Name": "Bolt"}
               ]
             }
-            """)
+        """)
     ]
+
+
 
 
     /// Definition für `additionalProperties` bei Objects

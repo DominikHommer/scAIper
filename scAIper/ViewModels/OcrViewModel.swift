@@ -77,6 +77,18 @@ class OcrViewModel: ObservableObject {
             }
         }
     }
+    func startLLMImageOnlyGenerateCSV(on image: UIImage,layout: LayoutType, completion: @escaping (URL?) -> Void) {
+        startOcrAndGenerate(
+            for: image,
+            layout: layout,
+            fileName: "ocr_output_llm_image.csv",
+            generator: { image, completion in
+                OCRManager.generateCSVWithOCRv2(from: image, completion: completion)
+            },
+            completion: completion
+        )
+    }
+
 
 
     func startOcrAndGeneratePDF(on image: UIImage, layout: LayoutType, completion: @escaping (URL?) -> Void) {
@@ -98,7 +110,6 @@ class OcrViewModel: ObservableObject {
             completion: completion
         )
     }
-
 
     func startScanAnimation() {
         time = 0.0

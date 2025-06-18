@@ -11,51 +11,57 @@ struct ChatbotView: View {
     @StateObject private var viewModel = ChatbotViewModel()
     @State private var userInput: String = ""
     @FocusState private var isTextFieldFocused: Bool
-    
+
     var body: some View {
-        VStack {
-            HStack {
-                Text("Dokumenten-Chatbot")
-                    .font(.title)
-                    .fontWeight(.bold)
-                Spacer()
-                Button("Reset") {
-                    viewModel.resetHistory()
+        NavigationStack {
+            VStack {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 10) {
+                        ForEach(viewModel.chatMessages) { message in
+                            ChatBubble(message: message)
+                        }
+                    }
+                    .padding(.horizontal)
                 }
-                .padding(.trailing)
-            }
-            .padding(.top, 20)
-            
-            ScrollView {
-                VStack(alignment: .leading, spacing: 10) {
-                    ForEach(viewModel.chatMessages) { message in
-                        ChatBubble(message: message)
+
+                HStack {
+                    TextField("Frage scAIper...", text: $userInput)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .focused($isTextFieldFocused)
+
+                    Button {
+                        viewModel.sendMessage(userInput)
+                        userInput = ""
+                        isTextFieldFocused = false
+                    } label: {
+                        Image(systemName: "paperplane.fill")
+                            .foregroundColor(.blue)
                     }
                 }
+                .padding()
             }
-            .padding()
-            
-            HStack {
-                TextField("Frage den Chatbot...", text: $userInput)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .focused($isTextFieldFocused)
-                
-                Button {
-                    viewModel.sendMessage(userInput)
-                    userInput = ""
-                    isTextFieldFocused = false
-                } label: {
-                    Image(systemName: "paperplane.fill")
-                        .foregroundColor(.blue)
+            .navigationTitle("scAIper")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        viewModel.resetHistory()
+                    } label: {
+                        Image(systemName: "arrow.counterclockwise")
+                            .imageScale(.large)
+                    }
+                    .accessibilityLabel("Reset Chatverlauf")
                 }
             }
-            .padding()
         }
         .onTapGesture {
             isTextFieldFocused = false
         }
     }
 }
+
+
+
 
 struct ChatBubble: View {
     let message: ChatMessage

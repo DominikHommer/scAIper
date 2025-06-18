@@ -9,7 +9,7 @@ import SwiftUI
 
 class ChatbotViewModel: ObservableObject {
     @Published var chatMessages: [ChatMessage] = [
-        ChatMessage(text: "Hallo! Ich bin der Chatbot. Wie kann ich dir helfen?", isUser: false)
+        ChatMessage(text: "Hallo! Ich bin scAIper. Wie kann ich dir helfen?", isUser: false)
     ]
 
     private let service = ChatbotService.shared
@@ -50,7 +50,7 @@ class ChatbotViewModel: ObservableObject {
     func resetHistory() {
         service.resetHistory()
         chatMessages = [
-            ChatMessage(text: "Hallo! Ich bin der Chatbot. Wie kann ich dir helfen?", isUser: false)
+            ChatMessage(text: "Hallo! Ich bin scAIper. Wie kann ich dir helfen?", isUser: false)
         ]
     }
 }

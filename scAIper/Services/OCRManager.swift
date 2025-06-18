@@ -9,6 +9,26 @@ import UIKit
 import Vision
 import NaturalLanguage
 
+extension UIImage {
+    func resizedToMaxWidth(_ maxWidth: CGFloat) -> UIImage? {
+        let size = self.size
+        guard size.width > maxWidth else { return self }
+        let scale = maxWidth / size.width
+        let newSize = CGSize(width: maxWidth, height: size.height * scale)
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
+        self.draw(in: CGRect(origin: .zero, size: newSize))
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return resizedImage
+    }
+
+    func toBase64JPEG(resizeToMaxWidth maxWidth: CGFloat = 700) -> String? {
+        let resizedImage = self.resizedToMaxWidth(maxWidth) ?? self
+        guard let jpegData = resizedImage.jpegData(compressionQuality: 0.8) else { return nil }
+        return jpegData.base64EncodedString()
+    }
+}
+
 class OCRManager: NSObject {
     static let shared = OCRManager()
     static func generatePDFWithPositionedOCR(
@@ -175,6 +195,45 @@ class OCRManager: NSObject {
             }
         }
     }
+
+    static func generateCSVWithOCRv2(
+        from image: UIImage,
+        completion: @escaping (Data?, String?) -> Void
+    ) {
+        print("LLM-Bildanalyse gestartet")
+
+        guard let base64 = image.toBase64JPEG() else {
+            print("Fehler beim Konvertieren des Bildes zu Base64")
+            completion(nil, nil)
+            return
+        }
+
+        StructureLLMService().sendImageAsBase64(base64: base64) { result in
+            switch result {
+            case .success(let resp):
+                let header = resp.header
+                var grid2d: [[String]] = [header]
+                for row in resp.table {
+                    let rowStrings = header.map { key in
+                        switch row[key] {
+                        case .string(let s): return s
+                        case .number(let n): return "\(n)"
+                        case .bool(let b):   return "\(b)"
+                        default:             return ""
+                        }
+                    }
+                    grid2d.append(rowStrings)
+                }
+                print("Strukturiertes Grid (Base64):", grid2d)
+                CSVGenerator.createCSV(from: grid2d, completion: completion)
+
+            case .failure(let error):
+                print("LLM-Request mit Base64 fehlgeschlagen:", error)
+                CSVGenerator.createCSV(from: [["Fehler beim Strukturieren"]], completion: completion)
+            }
+        }
+    }
+
 
     static func generateCSVWithOCR(
         from image: UIImage,

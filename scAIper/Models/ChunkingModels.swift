@@ -51,31 +51,33 @@ struct ChunkingModels {
 
     /// Beispiel-Prompts als typisiertes Array
     static let ChunkingFewShot: [ChatMessageLLM] = [
-        ChatMessageLLM(role: .user, content: """
-        Zerlege diesen Rechnungstext in sinnvolle Abschnitte:
-        RECHNUNG
-        RECHNUNG AN: VINCENT VOGELSTETTER JEDE STRASSE 123 12345 JEDE STADT
-        RECHNUNG NR. 12345 28. APRIL 2030 FOTOGRAFIE - SARAH MARCHSREITER
-        Beschreibung Anzahl Preis Summe
-        Eventfotografie (4-stündiges Event) 4 125€ 500€
-        Porträtfotoshooting 1 185€ 185€
-        Bildbearbeitung (35 Bilder) 35 5€ 175€
-        Zwischensumme 860€
-        Steuer (0 %) 0 €
-        Summe 860€
-        ZAHLUNGSINFORMATIONEN:
-        EMPFÄNGER: SARAH MARCHSREITER
-        KONTONUMMER: 0123 4567 8901
-        """),
-        ChatMessageLLM(role: .assistant, content: """
-        [{\"chunk_index\": 0, \"text\": \"RECHNUNG\"},
-         {\"chunk_index\": 1, \"text\": \"RECHNUNG AN: VINCENT VOGELSTETTER JEDE STRASSE 123 12345 JEDE STADT\"},
-         {\"chunk_index\": 2, \"text\": \"RECHNUNG NR. 12345 28. APRIL 2030 FOTOGRAFIE - SARAH MARCHSREITER\"},
-         {\"chunk_index\": 3, \"text\": \"Beschreibung Anzahl Preis Summe\\nEventfotografie (4-stündiges Event) 4 125€ 500€\\nPorträtfotoshooting 1 185€ 185€\\nBildbearbeitung (35 Bilder) 35 5€ 175€\"},
-         {\"chunk_index\": 4, \"text\": \"Zwischensumme 860€\\nSteuer (0 %) 0 €\\nSumme 860€\"},
-         {\"chunk_index\": 5, \"text\": \"ZAHLUNGSINFORMATIONEN:\\nEMPFÄNGER: SARAH MARCHSREITER\\nKONTONUMMER: 0123 4567 8901\"}]
-        """)
-        ]
+        ChatMessageLLM(role: .user, text:"""
+            Zerlege diesen Rechnungstext in sinnvolle Abschnitte:
+            RECHNUNG
+            RECHNUNG AN: VINCENT VOGELSTETTER JEDE STRASSE 123 12345 JEDE STADT
+            RECHNUNG NR. 12345 28. APRIL 2030 FOTOGRAFIE - SARAH MARCHSREITER
+            Beschreibung Anzahl Preis Summe
+            Eventfotografie (4-stündiges Event) 4 125€ 500€
+            Porträtfotoshooting 1 185€ 185€
+            Bildbearbeitung (35 Bilder) 35 5€ 175€
+            Zwischensumme 860€
+            Steuer (0 %) 0 €
+            Summe 860€
+            ZAHLUNGSINFORMATIONEN:
+            EMPFÄNGER: SARAH MARCHSREITER
+            KONTONUMMER: 0123 4567 8901
+            """),
+        ChatMessageLLM(role: .assistant, text: """
+            [{\"chunk_index\": 0, \"text\": \"RECHNUNG\"},
+             {\"chunk_index\": 1, \"text\": \"RECHNUNG AN: VINCENT VOGELSTETTER JEDE STRASSE 123 12345 JEDE STADT\"},
+             {\"chunk_index\": 2, \"text\": \"RECHNUNG NR. 12345 28. APRIL 2030 FOTOGRAFIE - SARAH MARCHSREITER\"},
+             {\"chunk_index\": 3, \"text\": \"Beschreibung Anzahl Preis Summe\\nEventfotografie (4-stündiges Event) 4 125€ 500€\\nPorträtfotoshooting 1 185€ 185€\\nBildbearbeitung (35 Bilder) 35 5€ 175€\"},
+             {\"chunk_index\": 4, \"text\": \"Zwischensumme 860€\\nSteuer (0 %) 0 €\\nSumme 860€\"},
+             {\"chunk_index\": 5, \"text\": \"ZAHLUNGSINFORMATIONEN:\\nEMPFÄNGER: SARAH MARCHSREITER\\nKONTONUMMER: 0123 4567 8901\"}]
+            """
+        )
+    ]
+
 
 
     struct SchemaDefinition: Encodable {

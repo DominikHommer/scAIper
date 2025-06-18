@@ -52,8 +52,9 @@ struct StructureLLMService {
         grid: [(text: String, x: CGFloat, y: CGFloat)],
         completion: @escaping (Result<StructureLLMModels.StructureResponse, Error>) -> Void
     ) {
-        let system = ChatMessageLLM(role: .system, content: StructureLLMModels.LLMInstruction)
+        let system = ChatMessageLLM(role: .system, text: StructureLLMModels.LLMInstruction)
         let fewShots: [ChatMessageLLM] = StructureLLMModels.LLMFewShot
+
         let gridJSON: String = {
             let array = grid.map { ["text": $0.text, "x": Double($0.x), "y": Double($0.y)] }
             do {
@@ -65,12 +66,10 @@ struct StructureLLMService {
             }
         }()
 
-        let user = ChatMessageLLM(
-            role: .user,
-            content: "Here is the unstructured table grid:\n\(gridJSON)"
-        )
+        let user = ChatMessageLLM(role: .user, text: "Here is the unstructured table grid:\n\(gridJSON)")
 
         let schemaFormat = JSONSchemaResponseFormat(json_schema: StructureLLMModels.StructureLLMSchema)
+
         let payload = ChatRequest(
             model: AppConfig.Structure.model,
             temperature: 0.8,
@@ -90,10 +89,47 @@ struct StructureLLMService {
                 completion(.failure(err))
             }
         }
+
     }
 }
 
 
+extension StructureLLMService {
+    func sendImageAsBase64(base64: String, completion: @escaping (Result<StructureLLMModels.StructureResponse, Error>) -> Void) {
+        let imageURL = "data:image/jpeg;base64,\(base64)"
+        let system = ChatMessageLLM(role: .system, text: StructureLLMModels.LLMInstructionVision)
+        
+        let userMessage = ChatMessageLLM(
+            role: .user,
+            blocks: [
+                .text("""
+                        Please extract the table data from the image below. Return only the JSON data matching the given schema with keys "header" and "table". 
+                        Use empty strings ("") for missing values, and avoid special Unicode characters. 
+                        Do NOT return the schema or any extra explanation.
+                        """),
+                .imageURL(url: imageURL)
+            ]
+        )
+        
+        let schemaFormat = JSONSchemaResponseFormat(json_schema: StructureLLMModels.StructureLLMSchema)
+        let payload = ChatRequest(
+            model: AppConfig.Structure.model,
+            temperature: 0.8,
+            max_completion_tokens: 4291,
+            top_p: 1.0,
+            stream: false,
+            response_format: schemaFormat,
+            messages: [system, userMessage]
+        )
+        
+        client.send(request: payload, endpoint: endpoint) { (result: Result<StructureLLMModels.StructureResponse, Error>) in
+            switch result {
+            case .success(let resp): completion(.success(resp))
+            case .failure(let err):  completion(.failure(err))
+            }
+        }
+    }
+}
 
 
 

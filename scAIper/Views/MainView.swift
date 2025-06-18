@@ -22,12 +22,12 @@ struct MainView: View {
             
             FinancialAnalysisView()
                 .tabItem {
-                    Label("Ausgaben", systemImage: "chart.pie.fill")
+                    Label("Finanzen", systemImage: "chart.pie.fill")
                 }
             
             ChatbotView()
                 .tabItem {
-                    Label("Chatbot", systemImage: "bubble.left.and.bubble.right.fill")
+                    Label("scAIper", systemImage: "bubble.left.and.bubble.right.fill")
                 }
         }
     }

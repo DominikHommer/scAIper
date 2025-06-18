@@ -28,7 +28,7 @@ final class ChatbotService {
     private let maxHistoryCount = 12
 
     private func appendUserMessage(_ text: String) {
-        let msg = ChatMessageLLM(role: .user, content: text)
+        let msg = ChatMessageLLM(role: .user, text: text)
         historyQueue.async {
             self.messageHistory.append(msg)
             self.trimHistoryIfNeeded()
@@ -36,12 +36,14 @@ final class ChatbotService {
     }
 
     private func appendAssistantMessage(_ text: String) {
-        let msg = ChatMessageLLM(role: .assistant, content: text)
+        let msg = ChatMessageLLM(role: .assistant, text: text)
         historyQueue.async {
             self.messageHistory.append(msg)
             self.trimHistoryIfNeeded()
         }
     }
+
+
 
     private func trimHistoryIfNeeded() {
         let excess = messageHistory.count - maxHistoryCount
@@ -108,8 +110,10 @@ final class ChatbotService {
                         completion(.failure(NSError(domain: "ChatbotService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Fehler beim Erzeugen des System-Prompts"])))
                         return
                     }
-                    // User-Nachricht mit RAG-Output
-                    let ragUser = ChatMessageLLM(role: .user, content: "\(input)\n\nHier die relevanten Dokumentabschnitte, beachte das Dokumente enthalten sein können die nichts mit der Fragestellung zu tun haben, ignoriere diese:\n\(ragOutput)")
+                    let ragUser = ChatMessageLLM(
+                        role: .user,
+                        text: "\(input)\n\nHier die relevanten Dokumentabschnitte, beachte das Dokumente enthalten sein können die nichts mit der Fragestellung zu tun haben, ignoriere diese:\n\(ragOutput)"
+                    )
 
                     // Nachrichten zusammenstellen: System, History, RAG-User
                     self.historyQueue.async {
@@ -133,7 +137,8 @@ final class ChatbotService {
                     completion(.failure(NSError(domain: "ChatbotService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Fehler beim Erzeugen des System-Prompts"])))
                     return
                 }
-                let userMsg = ChatMessageLLM(role: .user, content: input)
+                let userMsg = ChatMessageLLM(role: .user, text: input)
+
 
                 self.historyQueue.async {
                     let history = self.messageHistory

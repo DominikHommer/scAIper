@@ -62,11 +62,14 @@ struct ChatbotModels {
             base: baseDocCheckInstruction,
             wrapper: wrapper
         )
+        
         return [
-            .init(role: .system, content: systemContent),
-            .init(role: .user,   content: userInput)
+            ChatMessageLLM(role: .system, text: systemContent),
+            ChatMessageLLM(role: .user, text: userInput)
         ]
+
     }
+
 
     static func chatMessages(userInput: String, ragOutput: String? = nil) -> [ChatMessageLLM] {
         let wrapper = ChatResponseSchema(
@@ -81,15 +84,22 @@ struct ChatbotModels {
         )
 
         var msgs: [ChatMessageLLM] = [
-            .init(role: .system, content: systemContent)
+            ChatMessageLLM(role: .system, text: systemContent)
         ]
         if let rag = ragOutput {
-            msgs.append(.init(role: .user, content: "\(userInput)\n\nHier die relevanten Dokumentabschnitte, beachte das Dokumente enthalten sein können die nichts mit der Fragestellung zu tun haben, ignoriere diese:\n\(rag)"))
+            let fullInput = """
+            \(userInput)
+
+            Hier die relevanten Dokumentabschnitte, beachte das Dokumente enthalten sein können die nichts mit der Fragestellung zu tun haben, ignoriere diese:
+            \(rag)
+            """
+            msgs.append(ChatMessageLLM(role: .user, text: fullInput))
         } else {
-            msgs.append(.init(role: .user, content: userInput))
+            msgs.append(ChatMessageLLM(role: .user, text: userInput))
         }
         return msgs
     }
+
 
     private static func buildPromptWithSchema<Wrapper: Encodable>(
         base: String,

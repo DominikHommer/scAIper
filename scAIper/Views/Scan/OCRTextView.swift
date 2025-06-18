@@ -119,7 +119,7 @@ struct OCRTextView: View {
                     guard let image = scannedImage else { return }
                     selectedLayout = .tabelle
                     viewModel.startScanAnimation()
-                    viewModel.startOcrAndGenerateCSV(on: image, layout: .tabelle) { _ in
+                    viewModel.startLLMImageOnlyGenerateCSV(on: image, layout: .tabelle) { _ in
                         viewModel.stopScanAnimation()
                     }
                 }

@@ -1,3 +1,4 @@
+//
 //  FinancialAnalysisView.swift
 //  scAIper
 //
@@ -8,207 +9,187 @@ import SwiftUI
 
 struct FinancialAnalysisView: View {
     @State private var metadataList: [DocumentMetadata] = []
-    
-    // MARK: – Hilfsfunktion: Parst einen Währungs-String in Double
+
+    private let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateStyle = .short
+        return f
+    }()
+
     private func parseCurrency(_ str: String) -> Double {
-        let cleaned = str
-            .replacingOccurrences(of: "[^0-9,\\.]", with: "", options: .regularExpression)
-            .replacingOccurrences(of: ",", with: ".")
-        return Double(cleaned) ?? 0
+        let filtered = str.filter { "0123456789,.".contains($0) }
+        let noThousands = filtered.replacingOccurrences(of: ".", with: "")
+        let normalized = noThousands.replacingOccurrences(of: ",", with: ".")
+        if let val = Double(normalized) {
+            return val
+        } else {
+            print("Failed to parse currency from string: '\(str)' filtered as: '\(filtered)', normalized as: '\(normalized)'")
+            return 0
+        }
     }
-    
-    // MARK: – Gesamtbetrag aller Rechnungen, einmal pro fileURL
+
     private var totalInvoiceAmount: Double {
-        // Filter: nur Rechnungen mit Schlüssel "Gesamtbetrag"
         let invoices = metadataList.filter {
             $0.documentType == .rechnung &&
             ($0.keywords?["Gesamtbetrag"] ?? "").isEmpty == false
         }
-        let grouped = Dictionary(grouping: invoices, by: \.fileURL)
-        let latestPerFile: [DocumentMetadata] = grouped.compactMap { (_, metas) in
-            metas.max(by: { $0.lastModified < $1.lastModified })
-        }
-        // Summiere die Beträge
-        return latestPerFile.compactMap { meta in
-            meta.keywords?["Gesamtbetrag"]
-        }
-        .map { parseCurrency($0) }
-        .reduce(0, +)
+        let latestPerFile = Dictionary(grouping: invoices, by: \.fileURL)
+            .compactMap { $0.value.max(by: { $0.lastModified < $1.lastModified }) }
+
+        return latestPerFile
+            .compactMap { $0.keywords?["Gesamtbetrag"] }
+            .map(parseCurrency)
+            .reduce(0, +)
     }
-    
-    // MARK: – Neuester Nettolohn, einmal pro fileURL, dann global den neuesten wählen
+
     private var latestNetSalary: Double? {
-        // Filter: nur Lohnzettel mit Schlüssel "Nettolohn"
         let payslips = metadataList.filter {
             $0.documentType == .lohnzettel &&
             ($0.keywords?["Nettolohn"] ?? "").isEmpty == false
         }
-        // Gruppiere nach fileURL und nimm pro Gruppe den neuesten Eintrag
-        let grouped = Dictionary(grouping: payslips, by: \.fileURL)
-        let latestPerFile: [DocumentMetadata] = grouped.compactMap { (_, metas) in
-            metas.max(by: { $0.lastModified < $1.lastModified })
-        }
-        // Aus diesen Einträgen wähle global den aktuellsten
-        guard let latest = latestPerFile.max(by: { $0.lastModified < $1.lastModified }),
-              let nettoString = latest.keywords?["Nettolohn"] else {
+        let latestPerFile = Dictionary(grouping: payslips, by: \.fileURL)
+            .compactMap { $0.value.max(by: { $0.lastModified < $1.lastModified }) }
+        guard
+            let latest = latestPerFile.max(by: { $0.lastModified < $1.lastModified }),
+            let nettoString = latest.keywords?["Nettolohn"]
+        else {
             return nil
         }
         return parseCurrency(nettoString)
     }
-    
-    // MARK: – Netto nach Ausgaben
+
     private var netAfterExpenses: Double? {
         guard let net = latestNetSalary else { return nil }
         return net - totalInvoiceAmount
     }
-    
+
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Finanzanalyse")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(.top, 20)
-            
-            // Gesamtkosten (Rechnungen)
-            HStack {
-                Text("Gesamtkosten (Rechnungen):")
-                Spacer()
-                Text(totalInvoiceAmount, format: .currency(code: "EUR"))
-                    .fontWeight(.semibold)
-            }
-            .padding(.horizontal)
-            
-            // Neuester Nettolohn
-            HStack {
-                Text("Neuester Nettolohn:")
-                Spacer()
-                if let netSalary = latestNetSalary {
-                    Text(netSalary, format: .currency(code: "EUR"))
-                        .fontWeight(.semibold)
-                } else {
-                    Text("-")
-                        .foregroundColor(.secondary)
-                }
-            }
-            .padding(.horizontal)
-            
-            Divider()
-                .padding(.horizontal)
-            
-            // Netto nach Ausgaben
-            HStack {
-                Text("Netto nach Ausgaben:")
-                    .fontWeight(.bold)
-                Spacer()
-                if let remaining = netAfterExpenses {
-                    Text(remaining, format: .currency(code: "EUR"))
-                        .fontWeight(.bold)
-                        .foregroundColor(remaining >= 0 ? .green : .red)
-                } else {
-                    Text("-")
-                        .foregroundColor(.secondary)
-                }
-            }
-            .padding(.horizontal)
-            
-            Divider()
-                .padding(.horizontal)
-            
+        NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    // MARK: Einzelne Rechnungen (einmal pro fileURL, neueste)
-                    let invoices = metadataList.filter {
+                LazyVStack(alignment: .leading, spacing: 16) {
+                    // Einzelne Rechnungen (neueste pro Datei)
+                    let invoiceEntries = metadataList.filter {
                         $0.documentType == .rechnung &&
-                        ($0.keywords?["Rechnungsnummer"] ?? "").isEmpty == false
+                        ($0.keywords?["Gesamtbetrag"] ?? "").isEmpty == false
                     }
-                    let groupedInvoices = Dictionary(grouping: invoices, by: \.fileURL)
-                    let latestInvoices = groupedInvoices.compactMap { (_, metas) in
-                        metas.max(by: { $0.lastModified < $1.lastModified })
-                    }
-                    .sorted(by: { $0.lastModified > $1.lastModified })
-                    
-                    if !latestInvoices.isEmpty {
+                    let latestInvoices = Dictionary(grouping: invoiceEntries, by: \.fileURL)
+                        .compactMap { $0.value.max(by: { $0.lastModified < $1.lastModified }) }
+                        .sorted(by: { $0.lastModified > $1.lastModified })
+
+                    if latestInvoices.isEmpty {
+                        Text("Keine Rechnungen gefunden.")
+                            .foregroundColor(.secondary)
+                    } else {
                         Text("Einzelne Rechnungen")
                             .font(.headline)
-                            .padding(.bottom, 4)
-                        
-                        ForEach(latestInvoices, id: \.fileURL) { invoice in
+
+                        ForEach(latestInvoices, id: \.fileURL) { inv in
+                            let rawNumber = inv.keywords?["Rechnungsnummer"] ?? ""
+                            let numberText = rawNumber.isEmpty ? "-" : rawNumber
+
+                            let rawDate = inv.keywords?["Rechnungsdatum"] ?? ""
+                            let dateText = rawDate.isEmpty
+                                ? dateFormatter.string(from: inv.lastModified)
+                                : rawDate
+
+                            let amount = parseCurrency(inv.keywords?["Gesamtbetrag"] ?? "0")
+
                             HStack {
                                 VStack(alignment: .leading) {
-                                    Text("Rech.nr.: \(invoice.keywords?["Rechnungsnummer"] ?? "-")")
-                                    Text("Datum: \(invoice.keywords?["Rechnungsdatum"] ?? "-")")
+                                    Text("Rech.nr.: \(numberText)")
+                                    Text("Datum: \(dateText)")
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                 }
                                 Spacer()
-                                if let amtStr = invoice.keywords?["Gesamtbetrag"] {
-                                    let amtVal = parseCurrency(amtStr)
-                                    Text(amtVal, format: .currency(code: "EUR"))
-                                        .fontWeight(.semibold)
-                                } else {
-                                    Text("-")
-                                }
+                                Text(amount, format: .currency(code: "EUR"))
+                                    .fontWeight(.semibold)
                             }
                             .padding(.vertical, 4)
                         }
-                    } else {
-                        Text("Keine Rechnungen gefunden.")
-                            .foregroundColor(.secondary)
                     }
-                    
-                    Divider()
-                        .padding(.vertical, 8)
-                    
-                    // MARK: Einzelne Lohnzettel (einmal pro fileURL, neueste 3)
-                    let payslips = metadataList.filter {
+
+                    // Übersicht Rechnungen unter den Einträgen
+                    Divider().padding(.vertical, 8)
+                    HStack {
+                        Text("Gesamtkosten (Rechnungen):")
+                            .fontWeight(.bold)
+                        Spacer()
+                        Text(totalInvoiceAmount, format: .currency(code: "EUR"))
+                            .fontWeight(.bold)
+                    }
+                    Divider().padding(.vertical, 8)
+
+                    // Lohnzettel (neueste 3 pro Datei)
+                    let payslipEntries = metadataList.filter {
                         $0.documentType == .lohnzettel &&
                         ($0.keywords?["Zeitraum"] ?? "").isEmpty == false
                     }
-                    let groupedPayslips = Dictionary(grouping: payslips, by: \.fileURL)
-                    let latestPayslips = groupedPayslips.compactMap { (_, metas) in
-                        metas.max(by: { $0.lastModified < $1.lastModified })
-                    }
-                    .sorted(by: { $0.lastModified > $1.lastModified })
-                    
-                    if !latestPayslips.isEmpty {
+                    let latestPayslips = Dictionary(grouping: payslipEntries, by: \.fileURL)
+                        .compactMap { $0.value.max(by: { $0.lastModified < $1.lastModified }) }
+                        .sorted(by: { $0.lastModified > $1.lastModified })
+
+                    if latestPayslips.isEmpty {
+                        Text("Keine Lohnzettel gefunden.")
+                            .foregroundColor(.secondary)
+                    } else {
                         Text("Lohnzettel (neueste 3)")
                             .font(.headline)
-                            .padding(.bottom, 4)
-                        
+
                         ForEach(latestPayslips.prefix(3), id: \.fileURL) { slip in
+                            let period = slip.keywords?["Zeitraum"] ?? "-"
+                            let brutto = slip.keywords?["Bruttolohn"] ?? "-"
+                            let nett = parseCurrency(slip.keywords?["Nettolohn"] ?? "0")
+
                             HStack {
                                 VStack(alignment: .leading) {
-                                    Text("Zeitraum: \(slip.keywords?["Zeitraum"] ?? "-")")
-                                    Text("Brutto: \(slip.keywords?["Bruttolohn"] ?? "-")")
+                                    Text("Zeitraum: \(period)")
+                                    Text("Brutto: \(brutto)")
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                 }
                                 Spacer()
-                                if let nettStr = slip.keywords?["Nettolohn"] {
-                                    let nettVal = parseCurrency(nettStr)
-                                    Text(nettVal, format: .currency(code: "EUR"))
-                                        .fontWeight(.semibold)
-                                } else {
-                                    Text("-")
-                                }
+                                Text(nett, format: .currency(code: "EUR"))
+                                    .fontWeight(.semibold)
                             }
                             .padding(.vertical, 4)
                         }
-                    } else {
-                        Text("Keine Lohnzettel gefunden.")
-                            .foregroundColor(.secondary)
+                    }
+
+                    // Übersicht Lohnzettel unter den Einträgen
+                    Divider().padding(.vertical, 8)
+                    HStack {
+                        Text("Neuester Nettolohn:")
+                            .fontWeight(.bold)
+                        Spacer()
+                        if let salary = latestNetSalary {
+                            Text(salary, format: .currency(code: "EUR"))
+                                .fontWeight(.bold)
+                        } else {
+                            Text("-").foregroundColor(.secondary)
+                        }
+                    }
+                    Divider().padding(.vertical, 8)
+                    HStack {
+                        Text("Netto nach Ausgaben:")
+                            .fontWeight(.bold)
+                        Spacer()
+                        if let remaining = netAfterExpenses {
+                            Text(remaining, format: .currency(code: "EUR"))
+                                .fontWeight(.bold)
+                                .foregroundColor(remaining >= 0 ? .green : .red)
+                        } else {
+                            Text("-").foregroundColor(.secondary)
+                        }
                     }
                 }
                 .padding(.horizontal)
             }
-            
-            Spacer()
-        }
-        .padding(.bottom, 20)
-        .onAppear {
-            metadataList = DocumentMetadataManager.shared.loadMetadata()
+            .padding(.bottom, 20)
+            .onAppear {
+                metadataList = DocumentMetadataManager.shared.loadMetadata()
+            }
+            .navigationTitle("Finanzanalyse")
         }
     }
 }
-
-
