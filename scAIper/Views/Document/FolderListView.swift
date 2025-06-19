@@ -10,10 +10,10 @@ import SwiftUI
 /// A view that displays a list of document folders (categories) with navigation links to view their contents.
 /// Users can delete entire categories or navigate into them to view documents.
 struct FolderListView: View {
-    
+
     /// View model responsible for handling category data and related logic.
     @StateObject private var viewModel = FolderListViewModel()
-    
+
     var body: some View {
         NavigationStack {
             List {
@@ -46,4 +46,5 @@ struct FolderListView: View {
         }
     }
 }
+
 

@@ -20,61 +20,74 @@ struct ChatbotView: View {
     @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
-        NavigationStack {
-            VStack {
-                
-                // Chat history scrollable view
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 10) {
-                        ForEach(viewModel.chatMessages) { message in
-                            ChatBubble(message: message)
-                        }
+        VStack {
+            // Chat history scrollable view
+            ScrollView {
+                VStack(alignment: .leading, spacing: 10) {
+                    ForEach(viewModel.chatMessages) { message in
+                        ChatBubble(message: message)
                     }
-                    .padding(.horizontal)
                 }
-
-                // User input and send button
-                HStack {
-                    TextField("Frage scAIper...", text: $userInput)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .focused($isTextFieldFocused)
-
-                    Button(action: {
-                        print("Button tapped!")
-                        viewModel.sendMessage(userInput)
-                        userInput = ""
-                        isTextFieldFocused = false
-                    }) {
-                        HStack {
-                            Image(systemName: "paperplane.fill")
-                        }
-                        .foregroundColor(.blue)
-                    }
-
-                }
-                .padding()
+                .padding(.horizontal)
             }
-            .navigationTitle("scAIper")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                // Button to reset the chat history
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        viewModel.resetHistory()
-                    } label: {
-                        Label("Reset", systemImage: "arrow.counterclockwise")
-                    }
-                    .accessibilityLabel("Reset Chatverlauf")
 
+            // User input and send button
+            HStack {
+                TextField("Frage scAIper...", text: $userInput)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($isTextFieldFocused)
+                    .onSubmit {
+                        sendUserInput()
+                    }
+
+                Button(action: {
+                    sendUserInput()
+                }) {
+                    HStack {
+                        Image(systemName: "paperplane.fill")
+                    }
+                    .foregroundColor(userInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : .blue)
                 }
+                .disabled(userInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+            .padding()
+        }
+        .navigationTitle("scAIper")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            // Button to reset the chat history
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    viewModel.resetHistory()
+                } label: {
+                    Label("Reset", systemImage: "arrow.counterclockwise")
+                }
+                .accessibilityLabel("Reset Chatverlauf")
             }
         }
         // Tap gesture to dismiss keyboard when tapping outside
         .onTapGesture {
             isTextFieldFocused = false
         }
+        // Fix for NavigationStack: view appears after returning from another screen
+        .onAppear {
+            isTextFieldFocused = false
+            print("ChatbotView erscheint erneut")
+        }
+    }
+
+    /// Handles sending the user input to the chatbot and resetting the input field.
+    private func sendUserInput() {
+        let trimmedInput = userInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedInput.isEmpty else { return }
+
+        print("Button tapped with: \(trimmedInput)")
+        viewModel.sendMessage(trimmedInput)
+        userInput = ""
+        isTextFieldFocused = false
     }
 }
+
 
 /// A reusable view that displays a single chat message bubble, either from the user or the AI.
 struct ChatBubble: View {
@@ -114,8 +127,4 @@ struct ChatBubble: View {
             }
         }
     }
-}
-
-#Preview {
-    ChatbotView()
 }

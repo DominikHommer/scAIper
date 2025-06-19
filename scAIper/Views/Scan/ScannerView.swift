@@ -20,7 +20,7 @@ struct ScannerView: View {
     var body: some View {
         VStack {
             /// Title indicating which document type is being scanned.
-            Text("Scanne: \(selectedDocument.rawValue)")
+            Text("\(selectedDocument.rawValue)")
                 .font(.largeTitle)
                 .padding(.top, 20)
             

@@ -23,7 +23,8 @@ class ChatbotViewModel: ObservableObject {
     func sendMessage(_ userInput: String) {
         print("sendMessage called with: \(userInput)")
         // Do not send empty messages
-        guard !userInput.isEmpty else { return }
+        guard !userInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+
 
         // Append the user's message to the conversation
         let userMessage = ChatMessage(text: userInput, isUser: true)

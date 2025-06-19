@@ -69,19 +69,19 @@ struct DocumentTileView: View {
     }
 }
 
-/// A grid view showing all available document types.
+/// A view showing all available document types in a grid.
 /// Tapping on a document type navigates to the document scanner.
 struct DocumentGridView: View {
-    
+
     /// The document type selected by the user.
     @State private var selectedDocument: DocumentType? = nil
-    
+
     /// The navigation path for the stack-based navigation.
     @State private var path = NavigationPath()
-    
+
     /// Defines a two-column grid layout.
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
-    
+
     var body: some View {
         NavigationStack(path: $path) {
             ScrollView {
@@ -96,16 +96,10 @@ struct DocumentGridView: View {
                 }
                 .padding()
             }
-            /// Navigates to the scanner view for the selected document type.
+            .navigationTitle("Scannen")
             .navigationDestination(for: DocumentType.self) { doc in
                 ScannerView(selectedDocument: doc)
             }
-            .navigationTitle("Scannen")
         }
     }
 }
-
-#Preview {
-    DocumentGridView()
-}
-
