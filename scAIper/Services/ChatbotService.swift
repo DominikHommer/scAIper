@@ -7,13 +7,16 @@
 
 import Foundation
 
+/// Singleton class responsible for managing chatbot communication using an LLM client.
 final class ChatbotService {
+    /// Shared instance for global access.
     static let shared = ChatbotService()
 
     private let client: LLMClientType
     private let endpoint: URL
     private let historyQueue = DispatchQueue(label: "chatbot.history.queue")
 
+    /// Initializes the service with the provided LLM client and API endpoint.
     private init(
         client: LLMClientType = LLMClient(
             apiKey: AppConfig.Chat.apiKey
@@ -24,9 +27,11 @@ final class ChatbotService {
         self.endpoint = endpoint
     }
 
+    /// Stores the conversation history with a limited number of recent messages.
     private var messageHistory: [ChatMessageLLM] = []
     private let maxHistoryCount = 12
 
+    /// Appends a user message to the history, ensuring history limit is respected.
     private func appendUserMessage(_ text: String) {
         let msg = ChatMessageLLM(role: .user, text: text)
         historyQueue.async {
@@ -35,6 +40,7 @@ final class ChatbotService {
         }
     }
 
+    /// Appends an assistant message to the history, ensuring history limit is respected.
     private func appendAssistantMessage(_ text: String) {
         let msg = ChatMessageLLM(role: .assistant, text: text)
         historyQueue.async {
@@ -43,8 +49,7 @@ final class ChatbotService {
         }
     }
 
-
-
+    /// Removes oldest messages if history exceeds the maximum count.
     private func trimHistoryIfNeeded() {
         let excess = messageHistory.count - maxHistoryCount
         if excess > 0 {
@@ -52,12 +57,18 @@ final class ChatbotService {
         }
     }
 
+    /// Clears the entire chat history.
     func resetHistory() {
         historyQueue.async {
             self.messageHistory.removeAll()
         }
     }
 
+    /// Queries the LLM whether the current input requires document-based information (RAG).
+    ///
+    /// - Parameters:
+    ///   - input: User input string to analyze.
+    ///   - completion: Completion handler returning a Bool indicating document need or an Error.
     func queryDocumentCheck(
         input: String,
         completion: @escaping (Result<Bool, Error>) -> Void
@@ -90,6 +101,11 @@ final class ChatbotService {
         }
     }
 
+    /// Sends a chat completion query and handles logic for RAG or normal completion.
+    ///
+    /// - Parameters:
+    ///   - input: The user prompt.
+    ///   - completion: Completion handler with either the assistant's response or an Error.
     func queryChatCompletion(
         input: String,
         completion: @escaping (Result<String, Error>) -> Void
@@ -102,20 +118,19 @@ final class ChatbotService {
                 completion(.failure(err))
 
             case .success(true):
-                // RAG-Pfad
+                // Path with Retrieval-Augmented Generation (RAG)
                 RAGManager.shared.processRAG(for: input) { ragOutput in
-                    // System-Prompt extrahieren
                     let base = ChatbotModels.chatMessages(userInput: input, ragOutput: ragOutput)
                     guard let systemMessage = base.first(where: { $0.role == .system }) else {
-                        completion(.failure(NSError(domain: "ChatbotService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Fehler beim Erzeugen des System-Prompts"])))
+                        completion(.failure(NSError(domain: "ChatbotService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to generate system prompt."])))
                         return
                     }
+
                     let ragUser = ChatMessageLLM(
                         role: .user,
-                        text: "\(input)\n\nHier die relevanten Dokumentabschnitte, beachte das Dokumente enthalten sein können die nichts mit der Fragestellung zu tun haben, ignoriere diese:\n\(ragOutput)"
+                        text: "\(input)\n\nHere are the relevant document sections. Note that some documents may not be related to the question. Please ignore those:\n\(ragOutput)"
                     )
 
-                    // Nachrichten zusammenstellen: System, History, RAG-User
                     self.historyQueue.async {
                         let history = self.messageHistory
                         let final = [systemMessage] + history + [ragUser]
@@ -131,14 +146,14 @@ final class ChatbotService {
                 }
 
             case .success(false):
-                // Standard-Pfad
+                // Normal chat completion path
                 let base = ChatbotModels.chatMessages(userInput: input)
                 guard let systemMessage = base.first(where: { $0.role == .system }) else {
-                    completion(.failure(NSError(domain: "ChatbotService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Fehler beim Erzeugen des System-Prompts"])))
+                    completion(.failure(NSError(domain: "ChatbotService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to generate system prompt."])))
                     return
                 }
-                let userMsg = ChatMessageLLM(role: .user, text: input)
 
+                let userMsg = ChatMessageLLM(role: .user, text: input)
 
                 self.historyQueue.async {
                     let history = self.messageHistory
@@ -155,7 +170,12 @@ final class ChatbotService {
             }
         }
     }
-    
+
+    /// Sends a structured chat request to the LLM.
+    ///
+    /// - Parameters:
+    ///   - messages: The list of chat messages including system prompt and history.
+    ///   - completion: Completion handler with either the trimmed assistant response or an Error.
     private func sendChat(
         messages: [ChatMessageLLM],
         completion: @escaping (Result<String, Error>) -> Void
@@ -187,3 +207,4 @@ final class ChatbotService {
         }
     }
 }
+

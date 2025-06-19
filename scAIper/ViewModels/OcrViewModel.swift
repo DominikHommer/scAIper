@@ -4,15 +4,19 @@
 //
 //  Created by Dominik Hommer on 20.03.25.
 //
+
 import Foundation
 import UIKit
 import PDFKit
 
+/// Represents the layout type of the document – plain text or tabular data.
 enum LayoutType: String, CaseIterable, Identifiable, Codable {
     case text = "Text"
     case tabelle = "Tabelle"
-    var id: String { self.rawValue }
     
+    var id: String { self.rawValue }
+
+    /// Determines the file suffix based on layout type.
     var fileSuffix: String {
         switch self {
         case .text:
@@ -23,12 +27,14 @@ enum LayoutType: String, CaseIterable, Identifiable, Codable {
     }
 }
 
+/// ViewModel responsible for handling OCR-related logic and animation state.
 class OcrViewModel: ObservableObject {
     @Published var extractedText: String = ""
     @Published var isScanning: Bool = false
     @Published var hasAttemptedExtraction: Bool = false
     @Published var sourceURL: URL? = nil
 
+    // Animation state
     @Published var scanProgress: CGFloat = 0
     @Published var dotOffsetX: CGFloat = 0
     @Published var time: Double = 0.0
@@ -36,6 +42,7 @@ class OcrViewModel: ObservableObject {
 
     private var animationTimer: Timer? = nil
 
+    /// Core OCR method for extracting text and saving output using a provided generator function.
     private func startOcrAndGenerate(
         for image: UIImage,
         layout: LayoutType,
@@ -55,11 +62,11 @@ class OcrViewModel: ObservableObject {
             DispatchQueue.main.async {
                 self.isScanning = false
                 self.hasAttemptedExtraction = true
-                
+
                 if let recognizedText = recognizedText {
                     self.extractedText = recognizedText
                 }
-                
+
                 guard let data = data else {
                     completion(nil)
                     return
@@ -71,13 +78,15 @@ class OcrViewModel: ObservableObject {
                     self.sourceURL = fileURL
                     completion(fileURL)
                 } catch {
-                    print("Fehler beim Speichern der Datei: \(error)")
+                    print("Error saving file: \(error)")
                     completion(nil)
                 }
             }
         }
     }
-    func startLLMImageOnlyGenerateCSV(on image: UIImage,layout: LayoutType, completion: @escaping (URL?) -> Void) {
+
+    /// Starts LLM-only table extraction (no OCR engine) and generates CSV.
+    func startLLMImageOnlyGenerateCSV(on image: UIImage, layout: LayoutType, completion: @escaping (URL?) -> Void) {
         startOcrAndGenerate(
             for: image,
             layout: layout,
@@ -89,8 +98,7 @@ class OcrViewModel: ObservableObject {
         )
     }
 
-
-
+    /// Starts OCR with text layout and generates PDF.
     func startOcrAndGeneratePDF(on image: UIImage, layout: LayoutType, completion: @escaping (URL?) -> Void) {
         startOcrAndGenerate(
             for: image,
@@ -101,6 +109,7 @@ class OcrViewModel: ObservableObject {
         )
     }
 
+    /// Starts OCR with table layout and generates CSV.
     func startOcrAndGenerateCSV(on image: UIImage, layout: LayoutType, completion: @escaping (URL?) -> Void) {
         startOcrAndGenerate(
             for: image,
@@ -111,6 +120,7 @@ class OcrViewModel: ObservableObject {
         )
     }
 
+    /// Starts the scanning animation by updating progress and dot position over time.
     func startScanAnimation() {
         time = 0.0
         scanProgress = -imageSize.height / 2
@@ -132,15 +142,16 @@ class OcrViewModel: ObservableObject {
             }
         }
     }
-    
+
+    /// Stops the scanning animation and resets relevant properties.
     func stopScanAnimation() {
         animationTimer?.invalidate()
         animationTimer = nil
         scanProgress = -imageSize.height / 2
         dotOffsetX = 0
     }
-    
 
+    /// Resets all OCR-related and animation-related state variables.
     func reset() {
         DispatchQueue.main.async {
             self.extractedText = ""
@@ -155,7 +166,4 @@ class OcrViewModel: ObservableObject {
         }
     }
 }
-
-
-
 

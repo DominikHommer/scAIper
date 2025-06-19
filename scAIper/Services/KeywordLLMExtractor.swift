@@ -7,10 +7,19 @@
 
 import Foundation
 
+/// A service that uses a large language model (LLM) to extract structured keywords from OCRed document text.
 struct KeywordLLMExtractor {
+    /// Client to communicate with the LLM API.
     private let client: LLMClientType
+    
+    /// Endpoint where the keyword extraction request is sent.
     private let endpoint: URL
 
+    /// Initializes the extractor with a default or custom LLM client and endpoint.
+    ///
+    /// - Parameters:
+    ///   - client: The LLM client to use. Defaults to the one using the `AppConfig.Keywords.apiKey`.
+    ///   - endpoint: The endpoint URL. Defaults to `AppConfig.Keywords.endpoint`.
     init(
         client: LLMClientType = LLMClient(
             apiKey: AppConfig.Keywords.apiKey
@@ -21,35 +30,40 @@ struct KeywordLLMExtractor {
         self.endpoint = endpoint
     }
 
+    /// Extracts keywords from the provided text using an LLM, based on the document type.
+    ///
+    /// - Parameters:
+    ///   - documentType: The type of the document (e.g. invoice, pay slip, contract).
+    ///   - text: The full OCR output from the document.
+    ///   - completion: Closure called with either a dictionary of extracted keywords or an error.
     func extractKeywords(
         documentType: DocumentType,
         text: String,
         completion: @escaping (Result<[String: String], Error>) -> Void
     ) {
-        // 1) System-Nachricht
+        // System message with instructions tailored to the document type
         let system = ChatMessageLLM(
             role: .system,
             text: KeywordModels.instruction(for: documentType)
         )
 
-        // 2) Few-Shot-Beispiele
+        // Optional few-shot examples to guide the LLM’s behavior for this document type
         let fewShots = KeywordModels.fewShots(for: documentType)
 
-        // 3) User-Prompt
+        // User message containing the OCR text
         let user = ChatMessageLLM(
             role: .user,
             text: "OCR-Text:\n\"\"\"\n\(text)\n\"\"\""
         )
 
-
-        // 4) Schema-Wrapper
+        // Schema for expected JSON output format (key-value pairs)
         let schemaWrapper = KeywordModels.schemaWrapper(for: documentType)
         let responseFormat = JSONSchemaResponseFormat(json_schema: schemaWrapper)
 
-        // 5) Baue den ChatRequest-Payload
+        // Construct the payload for the LLM API request
         let payload = ChatRequest(
             model: AppConfig.Keywords.model,
-            temperature: 0.2,
+            temperature: 0.2,  // Low temperature for deterministic keyword extraction
             max_completion_tokens: 1024,
             top_p: 1.0,
             stream: false,
@@ -57,6 +71,7 @@ struct KeywordLLMExtractor {
             messages: [system] + fewShots + [user]
         )
 
+        // Send the request to the model
         client.send(request: payload, endpoint: endpoint) { (result: Result<[String: String], Error>) in
             switch result {
             case .success(let dict):
@@ -65,7 +80,7 @@ struct KeywordLLMExtractor {
                 } else {
                     print("Erkannte Keywords (\(dict.count)):")
                     for (key, value) in dict {
-                        print(" • \(key): \(value)")
+                        print(" - \(key): \(value)")
                     }
                 }
                 completion(.success(dict))
@@ -77,5 +92,3 @@ struct KeywordLLMExtractor {
         }
     }
 }
-
-

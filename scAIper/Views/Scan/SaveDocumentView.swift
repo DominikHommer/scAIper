@@ -7,18 +7,32 @@
 
 import SwiftUI
 
+/// A view allowing the user to save a scanned document by specifying its name and type.
+/// Depending on the document type, keywords may be extracted using an LLM.
 struct SaveDocumentView: View {
+    
+    /// Dismisses the view.
     @Environment(\.dismiss) private var dismiss
+    
+    /// The file name entered by the user (without extension).
     @State private var fileName: String = ""
     
+    /// The selected document type (e.g., invoice, salary slip).
     let documentType: DocumentType
-    let layoutType: LayoutType
-    let sourceURL: URL
-    let documentContent: String
     
+    /// The selected layout type (e.g., PDF, CSV).
+    let layoutType: LayoutType
+    
+    /// The source file URL of the document.
+    let sourceURL: URL
+    
+    /// The raw content of the document (used for keyword extraction).
+    let documentContent: String
+
     var body: some View {
         NavigationStack {
             Form {
+                // Input field for the document name
                 Section(header: Text("Dateiname")) {
                     HStack {
                         TextField("Name eingeben", text: $fileName)
@@ -27,7 +41,8 @@ struct SaveDocumentView: View {
                             .foregroundColor(.gray)
                     }
                 }
-                
+
+                // Save button
                 Button("Dokument speichern") {
                     saveDocument()
                 }
@@ -35,15 +50,17 @@ struct SaveDocumentView: View {
             .navigationTitle("Dokument speichern")
         }
     }
-    
+
+    /// Saves the document with the selected metadata and optionally extracted keywords.
     private func saveDocument() {
-        // 1) Dateinamen bauen
+        // 1) Build the full file name with timestamp and suffix
         let trimmed = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         
         let timestamp = DateFormatter("yyyyMMdd_HHmmss").string(from: Date())
         let fullFileName = "\(trimmed)_\(documentType.id)_\(layoutType.id)_\(timestamp)\(layoutType.fileSuffix)"
         
+        // 2) Handle special case for invoices or payslips where keyword extraction is required
         if documentType == .rechnung || documentType == .lohnzettel {
             let extractor = KeywordLLMExtractor()
             extractor.extractKeywords(documentType: documentType, text: documentContent) { result in
@@ -76,6 +93,7 @@ struct SaveDocumentView: View {
                 }
             }
         } else {
+            // 3) Save document without keyword extraction
             DocumentSaver.saveDocument(
                 sourceURL: sourceURL,
                 fileName: fullFileName,
@@ -89,14 +107,12 @@ struct SaveDocumentView: View {
     }
 }
 
+/// A convenience initializer for `DateFormatter` to simplify one-liners with format strings.
 private extension DateFormatter {
+    /// Initializes a date formatter with a given date format.
+    /// - Parameter format: The desired date format (e.g., "yyyyMMdd_HHmmss").
     convenience init(_ format: String) {
         self.init()
         dateFormat = format
     }
 }
-
-
-
-
-

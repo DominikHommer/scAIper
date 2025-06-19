@@ -50,6 +50,8 @@
 		FF3AF5BD2E01B158001F674D /* JSONSchemaResponseFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3AF5BC2E01B158001F674D /* JSONSchemaResponseFormat.swift */; };
 		FF3AF5C12E01C7DB001F674D /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3AF5C02E01C7DB001F674D /* AppConfig.swift */; };
 		FF3AF5C32E01CF09001F674D /* key.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = FF3AF5C22E01CF09001F674D /* key.xcconfig */; };
+		FF3AF5CA2E041B4F001F674D /* FinancialAnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3AF5C92E041B4F001F674D /* FinancialAnalysisViewModel.swift */; };
+		FF3AF5DF2E0455EE001F674D /* scAIper.docc in Sources */ = {isa = PBXBuildFile; fileRef = FF3AF5DE2E0455EE001F674D /* scAIper.docc */; };
 		FFA495E42DA423DA005B9BC4 /* LoadingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA495E32DA423DA005B9BC4 /* LoadingIndicatorView.swift */; };
 		FFA495E62DA58F92005B9BC4 /* DBSCAN.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA495E52DA58F92005B9BC4 /* DBSCAN.swift */; };
 		FFA495EC2DA66DD2005B9BC4 /* GridClustering.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA495EB2DA66DD2005B9BC4 /* GridClustering.swift */; };
@@ -123,6 +125,8 @@
 		FF3AF5BC2E01B158001F674D /* JSONSchemaResponseFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONSchemaResponseFormat.swift; sourceTree = "<group>"; };
 		FF3AF5C02E01C7DB001F674D /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		FF3AF5C22E01CF09001F674D /* key.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = key.xcconfig; sourceTree = "<group>"; };
+		FF3AF5C92E041B4F001F674D /* FinancialAnalysisViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinancialAnalysisViewModel.swift; sourceTree = "<group>"; };
+		FF3AF5DE2E0455EE001F674D /* scAIper.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = scAIper.docc; sourceTree = "<group>"; };
 		FFA495DA2D9D2B67005B9BC4 /* scAIper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = scAIper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FFA495DB2D9D2B67005B9BC4 /* scAIperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = scAIperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FFA495DC2D9D2B67005B9BC4 /* scAIperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = scAIperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -178,6 +182,7 @@
 		FF398CB72D887B6900364262 = {
 			isa = PBXGroup;
 			children = (
+				FF3AF5DE2E0455EE001F674D /* scAIper.docc */,
 				FF398D4A2D89BE8000364262 /* scAIper */,
 				FF398CD32D887B6A00364262 /* scAIperTests */,
 				FF398CDD2D887B6A00364262 /* scAIperUITests */,
@@ -245,6 +250,7 @@
 			isa = PBXGroup;
 			children = (
 				FF398D3D2D89BE8000364262 /* ChatbotView.swift */,
+				FFA495E32DA423DA005B9BC4 /* LoadingIndicatorView.swift */,
 			);
 			path = Chatbot;
 			sourceTree = "<group>";
@@ -262,7 +268,7 @@
 		FF398D662D8C110500364262 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				FFA495E32DA423DA005B9BC4 /* LoadingIndicatorView.swift */,
+				FF3AF5C92E041B4F001F674D /* FinancialAnalysisViewModel.swift */,
 				FF398DA82D96BEE100364262 /* ChatbotViewModel.swift */,
 				FF398DA42D95C7F100364262 /* DocumentDetailViewModel.swift */,
 				FF398DA22D95C77F00364262 /* FolderListViewModel.swift */,
@@ -472,6 +478,7 @@
 				FF3AF5B12E018BAE001F674D /* ChunkingModels.swift in Sources */,
 				FF398D7F2D8D443800364262 /* DocumentSaver.swift in Sources */,
 				FFA495F62DA83903005B9BC4 /* Chunk.swift in Sources */,
+				FF3AF5DF2E0455EE001F674D /* scAIper.docc in Sources */,
 				FFA495F42DA834A5005B9BC4 /* RAGModels.swift in Sources */,
 				FF398DB12D96DCE900364262 /* RAGManager.swift in Sources */,
 				FF398D6F2D8C11D200364262 /* OcrViewModel.swift in Sources */,
@@ -482,6 +489,7 @@
 				FF3AF5AF2E018AEB001F674D /* StructureLLMModels.swift in Sources */,
 				FF3AF5B52E018EA7001F674D /* LLMClientType.swift in Sources */,
 				FF398DBB2D980E5000364262 /* DocumentMetadataManager.swift in Sources */,
+				FF3AF5CA2E041B4F001F674D /* FinancialAnalysisViewModel.swift in Sources */,
 				FFC6561D2DF32058003DE0EC /* KeywordLLMExtractor.swift in Sources */,
 				FF398D772D8C17AF00364262 /* FullScreenImageView.swift in Sources */,
 				FF398D522D89BE8000364262 /* OCRTextView.swift in Sources */,
@@ -681,8 +689,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_DOCC_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dominikhommer.scAIper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_DOCUMENTATION_COMPILER = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -711,8 +721,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_DOCC_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dominikhommer.scAIper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_DOCUMENTATION_COMPILER = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

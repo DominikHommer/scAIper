@@ -1,5 +1,5 @@
 //
-//  ChunkingPrompts.swift
+//  ChunkingModels.swift
 //  scAIper
 //
 //  Created by Dominik Hommer on 17.06.25.
@@ -7,8 +7,12 @@
 
 import Foundation
 
+/// A namespace struct containing instructions, schema, and few-shot examples
+/// for chunking unstructured or semi-structured document texts into logical sections.
 struct ChunkingModels {
 
+    /// Instruction text (in German) to guide the LLM in dividing a document into logical chunks.
+    /// The output must follow a strict JSON format with defined schema.
     static let ChunkingInstruction = """
         Du bist ein intelligenter Assistent, der einen unstrukturierten oder semistrukturierten Text (z. B. eine Rechnung, ein Vertrag oder ein gescannter Brief) in sinnvolle Abschnitte („Chunks“) unterteilt. Diese Chunks sollen thematisch zusammenhängend und für eine spätere Analyse sinnvoll abgegrenzt sein.
 
@@ -49,7 +53,7 @@ struct ChunkingModels {
         }
         """
 
-    /// Beispiel-Prompts als typisiertes Array
+    /// Few-shot examples demonstrating how the LLM should segment a sample invoice into chunks.
     static let ChunkingFewShot: [ChatMessageLLM] = [
         ChatMessageLLM(role: .user, text:"""
             Zerlege diesen Rechnungstext in sinnvolle Abschnitte:
@@ -78,19 +82,20 @@ struct ChunkingModels {
         )
     ]
 
-
-
+    /// Defines the schema of the chunked output structure.
     struct SchemaDefinition: Encodable {
         let type: String
         let items: ItemsDefinition
         let description: String
 
+        /// Defines the structure of each item in the chunk array.
         struct ItemsDefinition: Encodable {
             let type: String
             let properties: [String: Property]
             let required: [String]
             let additionalProperties: Bool
 
+            /// Defines each property of a chunk item (e.g., `chunk_index`, `text`).
             struct Property: Encodable {
                 let type: String
                 let description: String
@@ -98,11 +103,13 @@ struct ChunkingModels {
         }
     }
 
+    /// Wraps the schema with a name identifier.
     struct SchemaWrapper: Encodable {
         let name: String
         let schema: SchemaDefinition
     }
 
+    /// The full chunking schema including metadata and structural definitions.
     static let ChunkingSchema = SchemaWrapper(
         name: "ChunkedText",
         schema: .init(
@@ -125,6 +132,8 @@ struct ChunkingModels {
             description: "An array of text chunks, each representing a meaningful section of the input text. Each chunk must include a chunk_index and the associated text content."
         )
     )
+
+    /// The decoded response structure from a chunking LLM completion.
     struct ChunkingResponse: Decodable {
         public let name: String
         public let items: [Chunk]

@@ -1,5 +1,5 @@
 //
-//  StructureLLMPrompts.swift
+//  StructureLLMModels.swift
 //  scAIper
 //
 //  Created by Dominik Hommer on 17.06.25.
@@ -7,7 +7,10 @@
 
 import Foundation
 
-struct StructureLLMModels{
+/// Defines models and prompts for reconstructing structured table data using LLMs.
+struct StructureLLMModels {
+    
+    /// Instruction for vision-based table extraction from images.
     private static let baseInstructionVision = """
     You are given an image of a table. Extract the table content as JSON matching the schema below. Do NOT return the schema itself, but the actual data matching the schema. Output must be valid JSON strictly matching the schema.
 
@@ -16,7 +19,7 @@ struct StructureLLMModels{
     - Output must be valid JSON strictly matching the schema.
     """
 
-    
+    /// Instruction for text-based table reconstruction using element positions.
     private static let baseInstruction = """
     You are given a list of extracted text elements from a scanned table. Each element contains a `text` value along with its approximate `x` and `y` coordinates (normalized between 0 and 1). Your task is to reconstruct the original tabular structure.
 
@@ -29,6 +32,7 @@ struct StructureLLMModels{
     Your output must exactly match the JSON schema below (no extra keys, no Markdown, no explanation):
     """
 
+    /// Full instruction used for text-based table parsing, including schema.
     static var LLMInstruction: String {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -46,6 +50,8 @@ struct StructureLLMModels{
         \(schemaJSON)
         """
     }
+
+    /// Full instruction used for vision-based table parsing, including schema.
     static var LLMInstructionVision: String {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -64,6 +70,7 @@ struct StructureLLMModels{
         """
     }
 
+    /// Example prompts for few-shot learning demonstrating table reconstruction.
     static let LLMFewShot: [ChatMessageLLM] = [
         ChatMessageLLM(role: .user, text: """
             Here is the unstructured table grid:
@@ -93,21 +100,18 @@ struct StructureLLMModels{
         """)
     ]
 
-
-
-
-    /// Definition für `additionalProperties` bei Objects
+    /// Schema type definition for dynamic object keys (e.g., row content).
     struct AdditionalPropertiesDef: Encodable {
         let type: [String]
     }
 
-    /// Definition für Array-Items
+    /// Schema type definition for array item types.
     struct ItemsDefinition: Encodable {
         let type: String
         let additionalProperties: AdditionalPropertiesDef?
     }
 
-    /// Definition für jeden Property-Eintrag
+    /// Defines a property within the overall schema (e.g., `header` or `table`).
     struct PropertyDefinition: Encodable {
         let type: String
         let description: String
@@ -127,7 +131,7 @@ struct StructureLLMModels{
         }
     }
 
-    /// Top-Level Schema-Definition
+    /// Defines the JSON schema for a structured table representation.
     struct SchemaDefinition: Encodable {
         let title: String
         let type: String
@@ -135,13 +139,13 @@ struct StructureLLMModels{
         let required: [String]
     }
 
-    /// Wrapper, wie ihn der LLM-Client erwartet
+    /// Wrapper for schema name and actual schema definition.
     struct SchemaWrapper: Encodable {
         let name: String
         let schema: SchemaDefinition
     }
 
-
+    /// The static table schema used by all LLM prompts for structure extraction.
     static let StructureLLMSchema = SchemaWrapper(
         name: "GenericTable",
         schema: SchemaDefinition(
@@ -165,9 +169,10 @@ struct StructureLLMModels{
             required: ["header", "table"]
         )
     )
+
+    /// Output model used to decode the LLM’s structured table response.
     struct StructureResponse: Decodable {
         let header: [String]
         let table: [[String: JSONValue]]
     }
 }
-

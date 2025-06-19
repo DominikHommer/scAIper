@@ -7,16 +7,19 @@
 
 import Foundation
 
+/// Defines prompts and schemas for extracting keywords from documents using an LLM.
 struct KeywordModels {
 
+    /// Returns the base instruction string depending on the document type (invoice or payslip).
     private static func baseInstruction(for docType: DocumentType) -> String {
         let typeName = docType == .rechnung ? "Rechnung" : "Gehaltsabrechnung"
         return """
-        Extrahiere die wichtigsten Informationen aus dem OCR-Text einer \(typeName). \
-        Gib das Ergebnis ausschließlich als JSON zurück – ohne Erklärungen, Markdown oder Zusatzfelder.
+        Extract the key information from the OCR text of a \(typeName). \
+        Return the result exclusively as JSON – without explanations, markdown, or extra fields.
         """
     }
 
+    /// Builds the complete instruction including the JSON schema for the specified document type.
     static func instruction(for docType: DocumentType) -> String {
         let base = baseInstruction(for: docType)
         let wrapper = schemaWrapper(for: docType)
@@ -35,7 +38,8 @@ struct KeywordModels {
         \(jsonSchema)
         """
     }
-    // MARK: – Few-Shot-Beispiele
+
+    /// Provides few-shot example messages for the given document type to guide the LLM.
     static func fewShots(for docType: DocumentType) -> [ChatMessageLLM] {
         switch docType {
         case .rechnung:
@@ -86,13 +90,12 @@ struct KeywordModels {
         }
     }
 
-
-
-
+    /// Defines a JSON schema property of type string.
     struct PropertyDef: Encodable {
         let type: String = "string"
     }
 
+    /// Defines the JSON schema structure for keyword extraction response.
     struct SchemaDef: Encodable {
         let type: String = "object"
         let properties: [String: PropertyDef]
@@ -100,12 +103,13 @@ struct KeywordModels {
         let additionalProperties: Bool = false
     }
 
+    /// Wraps the schema with a name for encoding.
     struct SchemaWrapper: Encodable {
         let name: String
         let schema: SchemaDef
     }
 
-
+    /// Returns the appropriate schema wrapper for the given document type.
     static func schemaWrapper(for docType: DocumentType) -> SchemaWrapper {
         switch docType {
         case .rechnung:
@@ -124,4 +128,3 @@ struct KeywordModels {
         }
     }
 }
-

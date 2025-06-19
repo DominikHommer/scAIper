@@ -7,30 +7,39 @@
 
 import SwiftUI
 
+/// ViewModel responsible for managing chatbot messages and interactions with the chat service.
 class ChatbotViewModel: ObservableObject {
+    
+    /// The list of chat messages exchanged between the user and the chatbot.
     @Published var chatMessages: [ChatMessage] = [
         ChatMessage(text: "Hallo! Ich bin scAIper. Wie kann ich dir helfen?", isUser: false)
     ]
 
+    /// Singleton instance of the chatbot service used for message completion.
     private let service = ChatbotService.shared
 
+    /// Sends a message from the user and appends the chatbot's response to the conversation.
+    /// - Parameter userInput: The user's input message to send to the chatbot.
     func sendMessage(_ userInput: String) {
+        print("sendMessage called with: \(userInput)")
+        // Do not send empty messages
         guard !userInput.isEmpty else { return }
 
-        // 1) Nutzer-Nachricht anhängen
+        // Append the user's message to the conversation
         let userMessage = ChatMessage(text: userInput, isUser: true)
         chatMessages.append(userMessage)
 
-        // 2) Lade-Platzhalter
+        // Append a loading indicator message while waiting for the response
         let loadingMessage = ChatMessage(text: "", isUser: false, isLoading: true)
         chatMessages.append(loadingMessage)
 
-        // 3) Anfrage ans Service
+        // Send the message to the chatbot service
         service.queryChatCompletion(input: userInput) { [weak self] result in
             DispatchQueue.main.async {
-                // Lade-Platzhalter entfernen
+                // Remove the loading indicator message
                 self?.chatMessages.removeAll(where: { $0.isLoading })
 
+                // Append the result from the chatbot
                 switch result {
                 case .success(let botResponse):
                     let botMessage = ChatMessage(text: botResponse, isUser: false)
@@ -47,6 +56,7 @@ class ChatbotViewModel: ObservableObject {
         }
     }
 
+    /// Resets the chat history to the initial welcome message and clears backend memory.
     func resetHistory() {
         service.resetHistory()
         chatMessages = [
@@ -54,5 +64,4 @@ class ChatbotViewModel: ObservableObject {
         ]
     }
 }
-
 

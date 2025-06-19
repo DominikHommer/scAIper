@@ -9,7 +9,10 @@ import UIKit
 import Vision
 import NaturalLanguage
 
+// MARK: - UIImage Extension
+
 extension UIImage {
+    /// Resizes the image proportionally to the given maximum width.
     func resizedToMaxWidth(_ maxWidth: CGFloat) -> UIImage? {
         let size = self.size
         guard size.width > maxWidth else { return self }
@@ -22,6 +25,7 @@ extension UIImage {
         return resizedImage
     }
 
+    /// Converts the image to a base64-encoded JPEG string.
     func toBase64JPEG(resizeToMaxWidth maxWidth: CGFloat = 700) -> String? {
         let resizedImage = self.resizedToMaxWidth(maxWidth) ?? self
         guard let jpegData = resizedImage.jpegData(compressionQuality: 0.8) else { return nil }
@@ -29,8 +33,13 @@ extension UIImage {
     }
 }
 
+// MARK: - OCRManager
+
+/// Handles all OCR-related operations including PDF and CSV generation.
 class OCRManager: NSObject {
     static let shared = OCRManager()
+
+    /// Performs OCR and generates a PDF where recognized text is drawn at its position.
     static func generatePDFWithPositionedOCR(
         from image: UIImage,
         completion: @escaping (Data?, String?) -> Void
@@ -42,7 +51,6 @@ class OCRManager: NSObject {
 
         let a4Portrait = CGSize(width: 595, height: 842)
         let a4Landscape = CGSize(width: 842, height: 595)
-
         let imageAspectRatio = image.size.width / image.size.height
         let a4 = imageAspectRatio > 1 ? a4Landscape : a4Portrait
         let pageRect = CGRect(origin: .zero, size: a4)
@@ -55,19 +63,14 @@ class OCRManager: NSObject {
             }
 
             var entries: [(String, CGRect)] = []
+
             for obs in observations {
                 guard let candidate = obs.topCandidates(1).first else { continue }
                 let fullRange = candidate.string.startIndex..<candidate.string.endIndex
                 if let wordBox = try? candidate.boundingBox(for: fullRange) {
-                    entries.append((
-                        candidate.string.trimmingCharacters(in: .whitespacesAndNewlines),
-                        wordBox.boundingBox
-                    ))
+                    entries.append((candidate.string.trimmingCharacters(in: .whitespacesAndNewlines), wordBox.boundingBox))
                 } else {
-                    entries.append((
-                        candidate.string.trimmingCharacters(in: .whitespacesAndNewlines),
-                        obs.boundingBox
-                    ))
+                    entries.append((candidate.string.trimmingCharacters(in: .whitespacesAndNewlines), obs.boundingBox))
                 }
             }
 
@@ -76,9 +79,8 @@ class OCRManager: NSObject {
                 return
             }
 
-            let data = UIGraphicsPDFRenderer(bounds: pageRect, format: UIGraphicsPDFRendererFormat()).pdfData { ctx in
+            let data = UIGraphicsPDFRenderer(bounds: pageRect).pdfData { ctx in
                 ctx.beginPage()
-
                 for (text, bbox) in entries {
                     guard !text.isEmpty else { continue }
 
@@ -86,8 +88,8 @@ class OCRManager: NSObject {
                     let y = (1 - bbox.maxY) * a4.height
                     let w = bbox.width * a4.width
                     let h = bbox.height * a4.height
-
                     let fontSize = min(h * 0.8, lineHeight * 0.8)
+
                     let attrs: [NSAttributedString.Key: Any] = [
                         .font: UIFont.systemFont(ofSize: fontSize),
                         .foregroundColor: UIColor.black
@@ -98,8 +100,8 @@ class OCRManager: NSObject {
                 }
             }
 
-            let all = entries.map { $0.0 }.joined(separator: " ")
-            completion(data, all)
+            let allText = entries.map { $0.0 }.joined(separator: " ")
+            completion(data, allText)
         }
 
         request.recognitionLevel = .accurate
@@ -114,6 +116,7 @@ class OCRManager: NSObject {
         }
     }
 
+    /// Performs OCR and creates a simple PDF containing all recognized text in one block.
     static func generatePDFWithOCR(
         from image: UIImage,
         completion: @escaping (Data?, String?) -> Void
@@ -128,23 +131,20 @@ class OCRManager: NSObject {
 
         let request = VNRecognizeTextRequest { request, error in
             if let error = error {
-                print("Fehler bei der Texterkennung: \(error)")
+                print("Text recognition error: \(error)")
                 completion(nil, nil)
                 return
             }
+
             guard let observations = request.results as? [VNRecognizedTextObservation] else {
                 completion(nil, nil)
                 return
             }
 
-            let sorted = observations.sorted { o1, o2 in
-                let top1 = o1.boundingBox.origin.y + o1.boundingBox.size.height
-                let top2 = o2.boundingBox.origin.y + o2.boundingBox.size.height
-                if abs(top1 - top2) > 0.05 {
-                    return top1 > top2
-                } else {
-                    return o1.boundingBox.origin.x < o2.boundingBox.origin.x
-                }
+            let sorted = observations.sorted {
+                let top1 = $0.boundingBox.origin.y + $0.boundingBox.height
+                let top2 = $1.boundingBox.origin.y + $1.boundingBox.height
+                return abs(top1 - top2) > 0.05 ? top1 > top2 : $0.boundingBox.origin.x < $1.boundingBox.origin.x
             }
 
             let combinedText = sorted
@@ -152,31 +152,26 @@ class OCRManager: NSObject {
                 .joined(separator: "\n")
 
             guard !combinedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                print("Kein Text erkannt, kein PDF wird erstellt.")
+                print("No text found; skipping PDF creation.")
                 completion(nil, nil)
                 return
             }
 
-            let format = UIGraphicsPDFRendererFormat()
-            let renderer = UIGraphicsPDFRenderer(bounds: pageRect, format: format)
+            let renderer = UIGraphicsPDFRenderer(bounds: pageRect)
             let data = renderer.pdfData { ctx in
                 ctx.beginPage()
                 let margin: CGFloat = 20
-                let textRect = CGRect(
-                    x: margin,
-                    y: margin,
-                    width: pageRect.width - 2*margin,
-                    height: pageRect.height - 2*margin
-                )
-                let style = NSMutableParagraphStyle()
-                style.lineBreakMode = .byWordWrapping
+                let textRect = CGRect(x: margin, y: margin, width: pageRect.width - 2 * margin, height: pageRect.height - 2 * margin)
+                let paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.lineBreakMode = .byWordWrapping
+
                 let attrs: [NSAttributedString.Key: Any] = [
                     .font: UIFont.systemFont(ofSize: 15),
                     .foregroundColor: UIColor.black,
-                    .paragraphStyle: style
+                    .paragraphStyle: paragraphStyle
                 ]
-                let attrText = NSAttributedString(string: combinedText, attributes: attrs)
-                attrText.draw(in: textRect)
+
+                NSAttributedString(string: combinedText, attributes: attrs).draw(in: textRect)
             }
 
             completion(data, combinedText)
@@ -186,24 +181,24 @@ class OCRManager: NSObject {
         request.usesLanguageCorrection = true
 
         Task.detached(priority: .background) {
-            let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
             do {
-                try handler.perform([request])
+                try VNImageRequestHandler(cgImage: cgImage, options: [:]).perform([request])
             } catch {
-                print("OCR-Fehler: \(error)")
+                print("OCR error: \(error)")
                 completion(nil, nil)
             }
         }
     }
 
+    /// Sends the base64-encoded image to an LLM-based table parser and generates a CSV.
     static func generateCSVWithOCRv2(
         from image: UIImage,
         completion: @escaping (Data?, String?) -> Void
     ) {
-        print("LLM-Bildanalyse gestartet")
+        print("Starting LLM image analysis...")
 
         guard let base64 = image.toBase64JPEG() else {
-            print("Fehler beim Konvertieren des Bildes zu Base64")
+            print("Base64 conversion failed.")
             completion(nil, nil)
             return
         }
@@ -224,17 +219,17 @@ class OCRManager: NSObject {
                     }
                     grid2d.append(rowStrings)
                 }
-                print("Strukturiertes Grid (Base64):", grid2d)
+                print("Structured grid (Base64):", grid2d)
                 CSVGenerator.createCSV(from: grid2d, completion: completion)
 
             case .failure(let error):
-                print("LLM-Request mit Base64 fehlgeschlagen:", error)
-                CSVGenerator.createCSV(from: [["Fehler beim Strukturieren"]], completion: completion)
+                print("LLM request with base64 failed:", error)
+                CSVGenerator.createCSV(from: [["Failed to structure data"]], completion: completion)
             }
         }
     }
 
-
+    /// Uses OCR with token positions, sends layout to LLM, and generates a structured CSV.
     static func generateCSVWithOCR(
         from image: UIImage,
         completion: @escaping (Data?, String?) -> Void
@@ -243,28 +238,31 @@ class OCRManager: NSObject {
             completion(nil, nil)
             return
         }
-        print("OCR-CSV-Erstellung gestartet")
+
+        print("Starting OCR-based CSV generation...")
 
         let request = VNRecognizeTextRequest { request, error in
             if let error = error {
-                print("Fehler bei der Texterkennung: \(error)")
+                print("Text recognition error: \(error)")
                 completion(nil, nil)
                 return
             }
+
             guard let observations = request.results as? [VNRecognizedTextObservation] else {
                 completion(nil, nil)
                 return
             }
 
             var elements: [(text: String, x: CGFloat, y: CGFloat)] = []
+
             for obs in observations {
-                guard let cand = obs.topCandidates(1).first else { continue }
-                let text = cand.string
+                guard let candidate = obs.topCandidates(1).first else { continue }
+                let text = candidate.string
                 let tokenizer = NLTokenizer(unit: .word)
                 tokenizer.string = text
                 tokenizer.enumerateTokens(in: text.startIndex..<text.endIndex) { range, _ in
                     let word = String(text[range])
-                    if let box = try? cand.boundingBox(for: range) {
+                    if let box = try? candidate.boundingBox(for: range) {
                         let midX = (box.topLeft.x + box.topRight.x + box.bottomLeft.x + box.bottomRight.x) / 4
                         let midY = (box.topLeft.y + box.topRight.y + box.bottomLeft.y + box.bottomRight.y) / 4
                         elements.append((word, midX, 1.0 - midY))
@@ -289,12 +287,12 @@ class OCRManager: NSObject {
                         }
                         grid2d.append(rowStrings)
                     }
-                    print("Strukturiertes Grid:", grid2d)
+                    print("Structured grid:", grid2d)
                     CSVGenerator.createCSV(from: grid2d, completion: completion)
 
                 case .failure(let error):
-                    print("LLM-Request fehlgeschlagen:", error)
-                    CSVGenerator.createCSV(from: [["Fehler beim Strukturieren"]], completion: completion)
+                    print("LLM request failed:", error)
+                    CSVGenerator.createCSV(from: [["Failed to structure data"]], completion: completion)
                 }
             }
         }
@@ -303,15 +301,13 @@ class OCRManager: NSObject {
         request.usesLanguageCorrection = true
 
         Task.detached(priority: .background) {
-            let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
             do {
-                try handler.perform([request])
+                try VNImageRequestHandler(cgImage: cgImage, options: [:]).perform([request])
             } catch {
-                print("OCR-Fehler: \(error)")
+                print("OCR error: \(error)")
                 completion(nil, nil)
             }
         }
     }
 }
-
 

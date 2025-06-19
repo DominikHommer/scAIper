@@ -5,9 +5,10 @@
 //  Created by Dominik Hommer on 25.03.25.
 //
 
-
 import SwiftUI
 
+/// Enum representing the different types of documents supported by scAIper.
+/// Each case is codable, identifiable, and can be iterated over.
 enum DocumentType: String, CaseIterable, Identifiable, Codable {
     case rechnung = "Rechnung"
     case bericht = "Bericht"
@@ -15,8 +16,10 @@ enum DocumentType: String, CaseIterable, Identifiable, Codable {
     case vertrag = "Vertrag"
     case andere = "Andere"
     
+    /// A unique identifier for each document type.
     var id: String { self.rawValue }
     
+    /// System icon name associated with the document type.
     var icon: String {
         switch self {
         case .rechnung: return "doc.text"
@@ -27,6 +30,7 @@ enum DocumentType: String, CaseIterable, Identifiable, Codable {
         }
     }
     
+    /// Color used to visually distinguish document types in the UI.
     var color: Color {
         switch self {
         case .rechnung: return .blue
@@ -38,7 +42,9 @@ enum DocumentType: String, CaseIterable, Identifiable, Codable {
     }
 }
 
+/// A tile view that visually represents a document type with icon and label.
 struct DocumentTileView: View {
+    /// The document type to display.
     var type: DocumentType
     
     var body: some View {
@@ -63,10 +69,17 @@ struct DocumentTileView: View {
     }
 }
 
+/// A grid view showing all available document types.
+/// Tapping on a document type navigates to the document scanner.
 struct DocumentGridView: View {
+    
+    /// The document type selected by the user.
     @State private var selectedDocument: DocumentType? = nil
+    
+    /// The navigation path for the stack-based navigation.
     @State private var path = NavigationPath()
     
+    /// Defines a two-column grid layout.
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     
     var body: some View {
@@ -83,6 +96,7 @@ struct DocumentGridView: View {
                 }
                 .padding()
             }
+            /// Navigates to the scanner view for the selected document type.
             .navigationDestination(for: DocumentType.self) { doc in
                 ScannerView(selectedDocument: doc)
             }
@@ -94,3 +108,4 @@ struct DocumentGridView: View {
 #Preview {
     DocumentGridView()
 }
+

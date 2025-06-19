@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Represents a content block within a chat message, which can be either plain text or an image URL.
 public enum ChatContentBlock: Codable {
     case text(String)
     case imageURL(url: String)
@@ -17,6 +18,8 @@ public enum ChatContentBlock: Codable {
         case image_url
     }
 
+    /// Encodes the content block into the given encoder.
+    /// Differentiates between text and image URL content types.
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
@@ -29,6 +32,8 @@ public enum ChatContentBlock: Codable {
         }
     }
 
+    /// Decodes the content block from the given decoder.
+    /// Supports decoding both text and image URL blocks, throws on unknown type.
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let type = try container.decode(String.self, forKey: .type)
@@ -48,10 +53,13 @@ public enum ChatContentBlock: Codable {
     }
 }
 
+/// Represents the content of a chat message which can be a plain string or an array of content blocks.
 public enum ChatMessageContent: Codable {
     case string(String)
     case blocks([ChatContentBlock])
 
+    /// Decodes the chat message content from the decoder.
+    /// Tries to decode as string first, if that fails tries array of blocks.
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         if let str = try? container.decode(String.self) {
@@ -69,6 +77,8 @@ public enum ChatMessageContent: Codable {
         }
     }
 
+    /// Encodes the chat message content to the encoder.
+    /// Supports encoding as string or blocks.
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
@@ -80,22 +90,28 @@ public enum ChatMessageContent: Codable {
     }
 }
 
+/// Represents a single chat message for the LLM interaction, including its role and content.
 public struct ChatMessageLLM: Codable {
+    /// The role of the message sender in the chat context.
     public enum Role: String, Codable { case system, user, assistant }
+    
     public let role: Role
     public let content: ChatMessageContent
 
+    /// Convenience initializer for plain text content.
     public init(role: Role, text: String) {
         self.role = role
         self.content = .string(text)
     }
 
+    /// Convenience initializer for content blocks.
     public init(role: Role, blocks: [ChatContentBlock]) {
         self.role = role
         self.content = .blocks(blocks)
     }
 }
 
+/// Represents a chat request payload sent to the LLM, parameterized by the response format type.
 public struct ChatRequest<ResponseFormat: Encodable>: Encodable {
     public let model: String
     public let temperature: Double
@@ -106,6 +122,7 @@ public struct ChatRequest<ResponseFormat: Encodable>: Encodable {
     public let messages: [ChatMessageLLM]
 }
 
+/// Represents the chat response from the LLM, wrapping the choices with their messages.
 public struct ChatResponse<Content: Decodable>: Decodable {
     public struct Choice: Decodable {
         public struct Message: Decodable {
@@ -115,5 +132,4 @@ public struct ChatResponse<Content: Decodable>: Decodable {
     }
     public let choices: [Choice]
 }
-
 
