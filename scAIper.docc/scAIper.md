@@ -25,15 +25,25 @@ The app transforms physical paper documents into digital blueprints by performin
 - **Embedding and similarity search:** Uses machine learning models to create semantic embeddings and perform similarity comparisons.
 - **Multiple document types supported:** Invoices, payslips, contracts, etc.
 
-### Requirements
+- A free API key for the GroqCloud
+- HuggingFace API key for embeddings and similarity search
+- **These keys must be configured in a `key.xcconfig` file in your project.**
 
-- **Xcode** (latest stable version recommended)
-- **iOS 18.3** or later as deployment target
-- **API keys:**
+  Example `key.xcconfig`:
+  ```xcconfig
+  GROQ_API_KEY=your_groq_api_key_here
+  HUGGINGFACE_API_KEY=your_huggingface_api_key_here
+  ```
 
-  - A free API key for the GroqCloud
-  - HuggingFace API key for embeddings and similarity search
-  - **These keys must be configured in a `key.xcconfig` file in your project.**
+  #### Setup in Xcode:
+  1. Add the `key.xcconfig` file to your project.
+  2. Open your project settings in Xcode.
+  3. Go to the **Info** tab > **Configurations** section.
+  4. Assign `key.xcconfig` to the Debug and/or Release configuration.
+  5. Access the keys in Swift using:
+     ```swift
+     let groqKey = ProcessInfo.processInfo.environment["GROQ_API_KEY"]
+     ```
 
 ### Setup and Running
 

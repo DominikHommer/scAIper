@@ -29,6 +29,21 @@ Die vollständige Entwickler- und Benutzer­dokumentation ist verfügbar unter:
   - Ein kostenloser API-Key für GroqCloud
   - HuggingFace API-Key für Embeddings und Ähnlichkeitssuche
   - **Diese Schlüssel müssen in einer Datei `key.xcconfig` im Projekt konfiguriert werden.**
+    Beispiel `key.xcconfig`:
+    ```xcconfig
+    GROQ_API_KEY=dein_groq_api_key
+    HF_API_KEY=dein_huggingface_api_key
+    ```
+
+    #### Einbindung in Xcode:
+    1. Füge die Datei `key.xcconfig` zum Projekt hinzu.
+    2. Öffne dein Projekt in Xcode.
+    3. Gehe zu den **Projekteinstellungen** → Tab **Info** → Bereich **Configurations**.
+    4. Weise `key.xcconfig` der Debug- und/oder Release-Konfiguration zu.
+    5. Greife im Swift-Code auf die Schlüssel zu über:
+       ```swift
+       let groqKey = ProcessInfo.processInfo.environment["GROQ_API_KEY"]
+       ```
 
 ### Einrichtung und Ausführung
 
