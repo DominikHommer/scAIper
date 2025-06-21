@@ -140,7 +140,7 @@ final class RAGManager {
     ///   - completion: Returns an array of scored documents.
     func topMatchingDocuments(
         for input: String,
-        topK: Int = 3,
+        topK: Int = 10,
         completion: @escaping ([ScoredDocument]) -> Void
     ) {
         computeSimilarityScores(for: input) { scores in
@@ -166,7 +166,7 @@ final class RAGManager {
         for input: String,
         completion: @escaping (String) -> Void
     ) {
-        topMatchingDocuments(for: input, topK: 10) { docs in
+        topMatchingDocuments(for: input, topK: 20) { docs in
             let context = docs.enumerated().map { idx, sd in
                 let score = String(format: "%.4f", sd.score)
                 return """

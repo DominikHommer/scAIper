@@ -125,10 +125,10 @@ final class ChatbotService {
                         completion(.failure(NSError(domain: "ChatbotService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to generate system prompt."])))
                         return
                     }
-
+                    let ragMessage = "\(input)\n\nHere are the relevant document sections. Note that some documents may not be related to the question. Please ignore those:\n\(ragOutput)"
                     let ragUser = ChatMessageLLM(
                         role: .user,
-                        text: "\(input)\n\nHere are the relevant document sections. Note that some documents may not be related to the question. Please ignore those:\n\(ragOutput)"
+                        text: ragMessage
                     )
 
                     self.historyQueue.async {
@@ -137,7 +137,7 @@ final class ChatbotService {
 
                         self.sendChat(messages: final) { result in
                             if case .success(let response) = result {
-                                self.appendUserMessage(input)
+                                self.appendUserMessage(ragMessage)
                                 self.appendAssistantMessage(response)
                             }
                             completion(result)
